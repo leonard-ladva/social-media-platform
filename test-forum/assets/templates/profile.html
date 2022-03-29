@@ -1,0 +1,88 @@
+{{ define "profile" }} {{ template "header" . }}
+
+<div class="container profile">
+  <div class="card user-card-full">
+    <div class="row">
+      <div class="col-sm-4 bg-c-lite-green user-profile mt-5">
+        
+        <div class="card-block text-center">
+          <div class="m-b-25"> <img src="https://img.icons8.com/bubbles/100/000000/user.png" class="img-radius" alt="User-Profile-Image"></div>
+          <h4 class="f-w-600">{{.User.Username}}</h4>
+          <h6 class="text-muted f-w-400">{{.User.Email}}</h6>
+          <h6 class="text-muted f-w-400">Current role: {{.User.Role}}</h6>
+          <h6 class="text-muted f-w-400">Since: {{.User.Date}}</h6>
+        </div>        
+
+      </div>
+        
+      <div class="col-sm-8 mt-5 ">
+        
+        <h3>Profile</h3>
+
+        {{if .Message.Msg1 }}
+          <h6 class="errormsg">{{.Message.Msg1}}</h6>
+        {{end}}
+
+        {{if .Message.Msg2 }}
+          <h6 class="success">{{.Message.Msg2}}</h6>
+        {{end}}
+
+        <!-- change password -->
+        <div class="profile-item" >
+          <form id="change-password" class="change-password" method="post">
+            <p>Change password</p>
+            <input class="form-control password" type="password" autocomplete="off" name="old-pass" placeholder="Old password">
+            <input class="form-control password" type="password" autocomplete="off" name="new-pass1" placeholder="New password">
+            <input class="form-control password" type="password" autocomplete="off" name="new-pass2" placeholder="Repeat password">
+            <button class="btn btn-primary" type="submit" name ="submit" value="change-password">Change password</button>
+          </form method="post" class="pass-change" id="pass-change">
+        </div>
+
+        <!-- Become a moderator -->
+        {{if eq .User.RoleID 1}}
+          <hr>
+          <div class="profile-item inline-block">
+            <p>Want to become a moderator? Send us a request</p>
+            <form id="become-moderator" class="become-moderator" method="post">
+              <textarea 
+                class="form-control application" 
+                name="application" 
+                id="application" 
+                rows="2" 
+                maxlength="1000" 
+                placeholder="Tell us why you want to become moderator"
+                style="resize: none;"></textarea>
+              <button class="btn btn-primary" type="submit" name ="submit" value="become-moderator">Send request</button>
+            </form>
+          </div>
+        {{end}}
+        
+        <!-- Notifications -->
+        <h3>Latest notifications</h3>
+        {{if not .Notifications}} 
+          <p>Good news: no notifications for now 👌</p>
+        {{end}}
+        {{range $val := .Notifications}}
+        <div class="notification {{if gt .Read 0}}faded{{end}}">
+          <hr>
+          <form id="hide-notification" method="post">
+            <div class="d-flex justify-content-between notification">
+              <span class="notification-text">
+                {{.Content}}
+                {{if ne .Link ""}} <a href="{{.Link}}">link</a>{{end}}
+              </span>
+              <input type="hidden" name="notificationid" value="{{.ID}}">
+              <button class="btn btn-secondary btn-sm hide-notification align-middle" type="submit" name="submit" value="hide-notification">Hide</button>
+            </div>
+            <span class="notification-item date"><small>{{.Date}}</small></span>
+          </form>
+          <hr>
+        </div>
+        {{end}}
+
+      </div>
+    </div>
+  </div> 
+</div>
+
+{{ template "footer" }} {{ end }}

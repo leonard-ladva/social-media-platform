@@ -1,0 +1,8 @@
+#ignore the database and certs
+/database/database.db
+/assets/database.db
+/assets/key.pem
+/assets/cert.pem
+/assets/server.crt 
+/assets/server.key
+/public/upload/*

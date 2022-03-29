@@ -1,0 +1,21 @@
+{{ define "register" }} {{ template "header" . }}
+
+<div class="wrapper">
+    <form class="form-signin" method="post">
+        <h2 class="form-signin-heading">Sign up</h2>
+        <input type="text" class="form-control" name="username" id="username" placeholder="Login" />
+        <input type="email" class="form-control" name="email" id="email" placeholder="E-mail" />
+        <input type="password" class="form-control" name="password" id="password" placeholder="Password" />
+        <input type="password" class="form-control" name="password2" id="password2" placeholder="Repeat password" />
+        <div class="msg"></div>
+        {{if .Message.Msg1}}
+        <div class="msg error">{{.Message.Msg1}}</div>
+        {{end}}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+    </form>
+    <h6>Already a member? Then <a href="/login">log in</a></h6>
+</div>
+
+<script src="/public/js/signup.js"></script>
+
+{{ template "footer" }} {{ end }}

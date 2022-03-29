@@ -1,0 +1,54 @@
+{{ define "category" }} {{ template "header" . }}
+
+<main class="container">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-12">
+                <div class="panel">
+                    {{range .Posts}}
+                        {{if or (eq .Status "approved") (eq .Author $.User.Username)}}
+                        <div class="postcontainer">
+                            <div class="postheader">
+                                <a href="/post?id={{.ID}}"><span class="postid">#{{.ID}} </span></a><span class="author">Posted by: {{.Author}}</span>
+                                <span class="date">{{.Date}}</span>
+                            </div>
+
+                            <div class="posttitle">
+                                <h5><a href="/post?id={{.ID}}">{{.Title}}</a></h5>
+                                <span>{{.Content}}</span> 
+                                {{if eq .Status "review"}}
+                                    <h6 class="errormsg">Your post was not approved yet, so it can not be seen by others</h6>
+                                {{else if eq .Status "declined"}}
+                                    <h6 class="errormsg">Your post was declined, so it can not be seen by others</h6>
+                                {{end}}
+                            </div>
+
+                            {{if .UserComments}}
+                                <h6> <b>You have commented:</b></h6>
+                                {{range .UserComments}}
+                                    <pre class="faded"> > {{.Date}}: {{.Content}}</pre>
+                                {{end}}
+                            {{end}}
+                            <div class="postfooter">
+                                <div class="categorybox">Posted in: {{range .Categories}} <a href="/category/{{.}}"><small>#{{.}}</small></a>{{end}}</div>
+
+                                <div class="likebox">
+                                    
+                                    {{if eq .Reaction "like"}}<i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                                    {{else}}<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>{{end}}<span class="like">{{.Likes}}</span>
+                                    {{if eq .Reaction "dislike"}}<i class="fa fa-thumbs-down" aria-hidden="true"></i>
+                                    {{else}}<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>{{end}}<span class="dislike">{{.Dislikes}}</span> 
+                                    <i class="fa fa-comment-o" aria-hidden="true"></i><span class="commentcount">{{.Comments}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {{end}}
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+{{ template "footer" }} {{ end }}

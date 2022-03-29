@@ -1,0 +1,79 @@
+{{define "config"}} {{template "header" .}}
+
+<div class="wrapper">
+
+      {{if eq .User.RoleID 3}}
+      <h3 class="config-header">Manage roles</h3>
+      <!-- Manage roles of users -->
+      <div class="form-group">
+        <form id="change-role" class="change-role" method="post">
+        <p>Assign user any role</p>
+          <input class="form-control username" type="text" name="username" placeholder="Enter username">
+          <select class="form-control" name="role" id="role">
+            <option value="1">User</option>
+            <option value="2">Moderator</option>
+            <option value="3">Administrator</option>
+          </select>
+          <button class="btn btn-primary" type="submit" name ="submit" value="change-role">Change role</button>
+        </form>
+      </div>
+
+      <h3 class="config-header">Manage categories</h3>
+      <!-- Add new category -->
+      <div>
+        <p>Add new category</p>
+        <form id="add-category" class="add-category" method="post">
+          <input class="form-control username" type="text" name="category-title" placeholder="Category title">
+          <textarea 
+            class="form-control application" 
+            name="category-description" 
+            id="application" 
+            rows="3" 
+            maxlength="1000" 
+            placeholder="Category description"
+            style="resize: none;"></textarea>
+            <input class="form-control username" type="text" name="category-link" placeholder="Category image link">
+            <button class="btn btn-primary" type="submit" name ="submit" value="add-category">Add category</button>
+        </form>
+      </div>
+
+      <!-- Delete category -->
+      <hr>
+      <div>
+        <form id="delete-category" class="delete-category" method="post">
+          <p>Delete existing category</p>
+          <select class="form-control categoryselect" name="category-id" id="category">
+            {{range $val := .Categories}}
+            <option value="{{.ID}}">{{.Title}}</option>
+            {{end}}
+          </select>
+          <button class="btn btn-danger" type="submit" name ="submit" value="delete-category">Delete category</button>
+        </form>
+      </div>
+      
+
+    {{end}}
+
+    {{if eq .User.RoleID 0}}
+    <form class="form-signin" method="post">
+        <h3 class="config-header">Database actions</h3>
+        <button class="btn btn-lg btn-primary btn-block" name="submit" value="delete" type="submit">Delete database records</button>
+    </form>
+    <br>
+    <form class="form-signin" method="post">
+        <button class="btn btn-lg btn-primary btn-block" name="submit" value="create" type="submit">Create dummy database records</button>
+    </form>
+    <br> 
+    
+    {{end}}
+
+    {{if .Message.Msg1 }}
+        <h6 class="errormsg">{{.Message.Msg1}}</h6>
+    {{end}}
+
+    {{if .Message.Msg2 }}
+        <h6 class="success">{{.Message.Msg2}}</h6>
+    {{end}}
+</div>
+
+{{template "footer"}} {{end}}
