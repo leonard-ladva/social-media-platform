@@ -1,0 +1,8 @@
+<template>	
+	<h1>Posts</h1>
+	<div id="posts"> </div>
+</template>
+
+<script>
+
+</script>
