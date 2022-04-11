@@ -1,12 +1,12 @@
 <template>
-	<div id="primaryPageWrapper">
-		<NavBar />
-		<div class="auth-wrapper">
-			<div class="auth-inner">
-				<router-view/>
-			</div>
-		</div>
-	</div>
+  <div id="primaryPageWrapper">
+    <NavBar/>
+    <div class="auth-wrapper">
+      <div class="auth-inner">
+        <router-view/>
+      </div>
+    </div>
+  </div>
   <!-- <nav>
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link> |
@@ -16,18 +16,18 @@
 </template>
 
 <script>
-	import NavBar from './components/Nav.vue'
+import NavBar from './components/Nav.vue'
 
-	export default {
-		name: 'App',
-		components: {
-			NavBar,
-		},
-	}
+export default {
+  name: 'App',
+  components: {
+    NavBar,
+  },
+}
 </script>
 
 <style scoped>
-	#primaryPageWrapper {
-		height: 100%;
-	}
+#primaryPageWrapper {
+  height: 100%;
+}
 </style>

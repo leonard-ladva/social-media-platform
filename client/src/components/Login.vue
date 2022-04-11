@@ -1,5 +1,5 @@
 <template>
-	<form>
+	<form method="post">
 		<h3>Login</h3>	
 
 		<div class="form-group">
@@ -8,9 +8,10 @@
 			label="Email"
 			type="email"
 			/> -->
-			<label>Email</label>
-			<input type="email" class="form-control" placeholder="Email"/>
-		</div>
+			<label>Email
+        <input type="email" class="form-control" placeholder="Email"/>
+      </label>
+    </div>
 
 		<div class="form-group">
 			<!-- <BaseInput
@@ -18,9 +19,10 @@
 			label="Password"
 			type="password"
 			/> -->
-			<label>Password</label>
-			<input type="password" class="form-control" placeholder="Password"/>
-		</div>
+			<label>Password
+        <input type="password" class="form-control" placeholder="Password"/>
+      </label>
+    </div>
 
 		<button class="btn btn-primary btn-block">Login</button>
 	</form>	
