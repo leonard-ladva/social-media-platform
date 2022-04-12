@@ -36,12 +36,12 @@ type Message struct {
 }
 
 type Post struct {
-	ID         string
-	UserID     string
-	Title      string
-	Content    string
-	CategoryID string
-	CreatedAt  time.Time
+	ID			string		`json:"id"`
+	UserID	    string		`json:"userId"`
+	Content		string		`json:"content"`
+	Tag			string		`json:"tag"`
+	TagID		string		`json:"tagId"`
+	CreatedAt	time.Time	`json:"createdAt"`
 }
 
 type Session struct {

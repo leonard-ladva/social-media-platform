@@ -31,11 +31,6 @@ var characterReq = map[string]string{
 	"Email":     "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
 }
 
-type formError struct {
-	field   string
-	message string
-}
-
 var fields = []string{"Email", "Nickname", "FirstName", "LastName", "Gender"}
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -57,16 +52,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		errors.ServerError(w, err)
 		return
 	}
-
-	var formErrors []formError
-	fmt.Println(formErrors)
-
-	// v := reflect.ValueOf(user)
-	//  Check characters
-	// for _, field := range fields {
-	// 	fmt.Println(v.FieldByName(field))
-	// 	checkCharacters(field, string(v.FieldByName(field)))
-	// }
 
 	// Email
 	fmt.Println("Email okay?",
@@ -119,4 +104,27 @@ func checkLength(field string, value string) bool {
 func checkCharacters(field string, value string) bool {
 	match := regexp.MustCompile(characterReq[field]).MatchString(value)
 	return match
+}
+
+func submitPost(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var post database.Post
+
+	err = json.Unmarshal(body, &post)
+	if err != nil {
+		log.Println(err)
+		errors.ServerError(w, err)
+		return
+	}
+
+	post.Insert()
 }
