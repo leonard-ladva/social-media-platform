@@ -11,7 +11,6 @@ func setupRoutes() {
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/submitpost", submitPost)
 	http.HandleFunc("/login", loginHandler)
-	//http.HandleFunc("/", homeHandler)
 }
 
 func main() {
@@ -25,6 +24,5 @@ func main() {
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	// (*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Content-type")
 }

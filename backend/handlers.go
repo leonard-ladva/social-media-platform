@@ -98,6 +98,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	if r.Method == "OPTIONS" {
 		return
 	}
@@ -115,9 +116,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		errors.ServerError(w, err)
 		return
 	}
-
-	var formErrors []formError
-	fmt.Println(formErrors)
 
 	if database.IfUserExist("Email", user.Email) || database.IfUserExist("Nickname", user.Email) {
 		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(user.Password))
