@@ -97,6 +97,48 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var user database.User
+
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		log.Println(err)
+		errors.ServerError(w, err)
+		return
+	}
+
+	var formErrors []formError
+	fmt.Println(formErrors)
+
+	if database.IfUserExist("Email", user.Email) || database.IfUserExist("Nickname", user.Email) {
+		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(user.Password))
+		if err != nil {
+			log.Println("Wrong password for user: ", user.Username)
+			pagedata.Message.Msg1 = "Haha, wrong!"
+			tmpl.ExecuteTemplate(w, "login", pagedata)
+		}
+
+		if user.Username == username || user.Email == username {
+			log.Println("Success, username & password match 🔓")
+
+		} else {
+			log.Println("Access denied, no cookies for you! 😈")
+			return
+		}
+
+		database.AddSession(w, r, user)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
 func checkLength(field string, value string) bool {
 	return (len(value) >= lengthReq[field][0] && len(value) <= lengthReq[field][1])
 }

@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"math/rand"
 	"strconv"
 	"time"
@@ -12,10 +13,15 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// func GetUserByUserName(username string) User {
-// 	var user User
-// 	row := DB.QueryRow("SELECT u.user_id, u.username, u.password, u.email")
-// }
+func GetUserByUserName(username string) User {
+	var user User
+	cmd := "SELECT ID, Nickname, Password, Email, FirstName, LastName, Gender, Age, Color, CreatedAt FROM user WHERE Nickname = ? OR Email = ?"
+	row := DB.QueryRow(cmd, username)
+
+	row.Scan(&user.ID, &user.Nickname, &user.Password, &user.Email, &user.FirstName, &user.LastName, &user.Gender, &user.Age, &user.Color, &user.CreatedAt)
+	log.Println("Getting user from database | User: ", username)
+	return user
+}
 
 func IfUserExist(field string, value string) bool {
 	var user User

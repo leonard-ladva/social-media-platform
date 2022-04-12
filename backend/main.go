@@ -10,6 +10,8 @@ import (
 func setupRoutes() {
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/submitpost", submitPost)
+	http.HandleFunc("/login", loginHandler)
+	//http.HandleFunc("/", homeHandler)
 }
 
 func main() {
