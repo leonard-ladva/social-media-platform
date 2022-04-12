@@ -1,7 +1,8 @@
-package database
+package data
 
 import (
 	"database/sql"
+
 	"git.01.kood.tech/Rostislav/real-time-forum/errors"
 
 	_ "github.com/mattn/go-sqlite3"

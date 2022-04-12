@@ -1,4 +1,4 @@
-package database
+package data
 
 import (
 	"database/sql"
@@ -26,7 +26,6 @@ func GetUserByUserName(username string) User {
 func IfUserExist(field string, value string) bool {
 	var user User
 	cmd := fmt.Sprintf(`SELECT Nickname, Email FROM user WHERE %s = ?`, field)
-	// row := DB.QueryRow("SELECT Nickname, Email FROM user WHERE Nickname = ?", value)
 	row := DB.QueryRow(cmd, value)
 	err := row.Scan(&user.Nickname, &user.Email)
 	if err == sql.ErrNoRows {

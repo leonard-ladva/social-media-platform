@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"git.01.kood.tech/Rostislav/real-time-forum/database"
+	"git.01.kood.tech/Rostislav/real-time-forum/data"
 	"git.01.kood.tech/Rostislav/real-time-forum/errors"
 
 	"golang.org/x/crypto/bcrypt"
@@ -33,7 +33,7 @@ var characterReq = map[string]string{
 
 var fields = []string{"Email", "Nickname", "FirstName", "LastName", "Gender"}
 
-func registerHandler(w http.ResponseWriter, r *http.Request) {
+func Register(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	if r.Method == "OPTIONS" {
 		return
@@ -44,7 +44,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	var user database.User
+	var user data.User
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {
@@ -55,12 +55,12 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Email
 	fmt.Println("Email okay?",
-		!database.IfUserExist("Email", user.Email),
+		!data.IfUserExist("Email", user.Email),
 		checkCharacters("Email", user.Email))
 
 	// Nickname
 	fmt.Println("Nickn okay?",
-		!database.IfUserExist("Nickname", user.Nickname),
+		!data.IfUserExist("Nickname", user.Nickname),
 		checkCharacters("Nickname", user.Nickname),
 		checkLength("Nickname", user.Nickname))
 
@@ -97,46 +97,46 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func loginHandler(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		return
-	}
+// func loginHandler(w http.ResponseWriter, r *http.Request) {
+// 	enableCors(&w)
+// 	if r.Method == "OPTIONS" {
+// 		return
+// 	}
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		panic(err)
-	}
+// 	body, err := io.ReadAll(r.Body)
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	var user database.User
+// 	var user data.User
 
-	err = json.Unmarshal(body, &user)
-	if err != nil {
-		log.Println(err)
-		errors.ServerError(w, err)
-		return
-	}
+// 	err = json.Unmarshal(body, &user)
+// 	if err != nil {
+// 		log.Println(err)
+// 		errors.ServerError(w, err)
+// 		return
+// 	}
 
-	if database.IfUserExist("Email", user.Email) || database.IfUserExist("Nickname", user.Email) {
-		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(user.Password))
-		if err != nil {
-			log.Println("Wrong password for user: ", user.Username)
-			pagedata.Message.Msg1 = "Haha, wrong!"
-			tmpl.ExecuteTemplate(w, "login", pagedata)
-		}
+// 	if data.IfUserExist("Email", user.Email) || data.IfUserExist("Nickname", user.Email) {
+// 		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(user.Password))
+// 		if err != nil {
+// 			log.Println("Wrong password for user: ", user.Username)
+// 			pagedata.Message.Msg1 = "Haha, wrong!"
+// 			tmpl.ExecuteTemplate(w, "login", pagedata)
+// 		}
 
-		if user.Username == username || user.Email == username {
-			log.Println("Success, username & password match 🔓")
+// 		if user.Username == username || user.Email == username {
+// 			log.Println("Success, username & password match 🔓")
 
-		} else {
-			log.Println("Access denied, no cookies for you! 😈")
-			return
-		}
+// 		} else {
+// 			log.Println("Access denied, no cookies for you! 😈")
+// 			return
+// 		}
 
-		database.AddSession(w, r, user)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
-}
+// 		data.AddSession(w, r, user)
+// 		http.Redirect(w, r, "/", http.StatusSeeOther)
+// 	}
+// }
 func checkLength(field string, value string) bool {
 	return (len(value) >= lengthReq[field][0] && len(value) <= lengthReq[field][1])
 }
@@ -157,7 +157,7 @@ func submitPost(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	var post database.Post
+	var post data.Post
 
 	err = json.Unmarshal(body, &post)
 	if err != nil {

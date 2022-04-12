@@ -4,25 +4,19 @@ import (
 	"fmt"
 	"net/http"
 
-	"git.01.kood.tech/Rostislav/real-time-forum/database"
+	"git.01.kood.tech/Rostislav/real-time-forum/data"
+	"git.01.kood.tech/Rostislav/real-time-forum/handlers"
 )
 
 func setupRoutes() {
-	http.HandleFunc("/register", registerHandler)
-	http.HandleFunc("/submitpost", submitPost)
-	http.HandleFunc("/login", loginHandler)
+	// http.HandleFunc("/login", handlers.Login)
+	http.HandleFunc("/register", handlers.Register)
 }
 
 func main() {
-	database.Connect()
+	data.Connect()
 	fmt.Println("Database Connected")
 
 	setupRoutes()
 	http.ListenAndServe(":9100", nil)
-
-}
-
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Content-type")
 }
