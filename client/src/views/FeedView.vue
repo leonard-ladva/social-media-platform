@@ -1,8 +1,12 @@
-<template>	
-	<h1>Posts</h1>
-	<div id="posts"> </div>
+<template>
+	<MakePost/>
 </template>
-
 <script>
+	import MakePost from "../components/MakePost.vue"
 
+	export default {
+		components: {
+			MakePost
+		}
+	}
 </script>
