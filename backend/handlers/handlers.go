@@ -6,7 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"regexp"
+	"strconv"
 
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
 	"git.01.kood.tech/Rostislav/real-time-forum/errors"
@@ -14,25 +14,27 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var lengthReq = map[string][]int{
-	"Nickname":  {3, 20},
-	"Password":  {8, 50},
-	"FirstName": {1, 50},
-	"LastName":  {1, 50},
-	"Gender":    {1, 50},
+type StringInt int
+
+func (st *StringInt) UnmarshalJSON(b []byte) error {
+	var item interface{}
+	if err := json.Unmarshal(b, &item); err != nil {
+		return err
+	}
+	switch v := item.(type) {
+	case int:
+		*st = StringInt(v)
+	case float64:
+		*st = StringInt(int(v))
+	case string:
+		i, err := strconv.Atoi(v)
+		if err != nil {
+			return err
+		}
+		*st = StringInt(i)
+	}
+	return nil
 }
-
-var characterReq = map[string]string{
-	"Nickname":  "^[a-zA-Z0-9]*$", // letters, numbers
-	"Password":  "^[ -~]*$",       // all ascii characres in range space to ~
-	"FirstName": "^[a-zA-Z]*$",    // letters
-	"LastName":  "^[a-zA-Z]*$",    // letters
-	"Gender":    "^[a-zA-Z ]*$",   // letters and spaces
-	"Email":     "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
-}
-
-var fields = []string{"Email", "Nickname", "FirstName", "LastName", "Gender"}
-
 func Register(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	if r.Method == "OPTIONS" {
@@ -48,53 +50,36 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		log.Println(err)
-		errors.ServerError(w, err)
+		errors.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// Email
-	fmt.Println("Email okay?",
-		!data.IfUserExist("Email", user.Email),
-		checkCharacters("Email", user.Email))
-
-	// Nickname
-	fmt.Println("Nickn okay?",
-		!data.IfUserExist("Nickname", user.Nickname),
-		checkCharacters("Nickname", user.Nickname),
-		checkLength("Nickname", user.Nickname))
-
-	// Password
-	fmt.Println("Psswd okay?",
-		checkCharacters("Password", user.PasswordPlain),
-		checkLength("Password", user.PasswordPlain))
-
-	// Password Confirm
-	fmt.Println("Cnfrm okay?", user.PasswordConfirm == user.PasswordPlain)
-
-	// FirstName
-	fmt.Println("FName okay?",
-		checkCharacters("FirstName", user.FirstName),
-		checkLength("FirstName", user.FirstName))
-
-	// LastName
-	fmt.Println("LName okay?",
-		checkCharacters("LastName", user.LastName),
-		checkLength("LastName", user.LastName))
-
-	// Gender
-	fmt.Println("Gendr okay?",
-		checkCharacters("Gender", user.Gender),
-		checkLength("Gender", user.Gender))
-
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.PasswordPlain), 10)
-	if err != nil {
-		errors.ServerError(w, err)
+	errs := user.IsValid()
+	fmt.Println(errs)
+	if len(errs) == 0 {
+		fmt.Println("Success your accounts info is superb")
+		// Successful register
+		// business logic
+		passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.PasswordPlain), 10)
+		if err != nil {
+			errors.ServerError(w, err)
+		}
+		user.Password = passwordHash
+		user.Insert()
+		w.WriteHeader(http.StatusOK)
+		return
 	}
-	user.Password = passwordHash
-
-	user.Insert()
-
+	formErrs, err := json.Marshal(errs)
+	if err != nil {
+		errors.ErrorLog.Println("encoding formErrs to JSON")
+	}
+	w.WriteHeader(http.StatusBadRequest)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(formErrs)
+	// display errors on register form
+	fmt.Println("Errors in form!!!!")
+	return
 }
 
 // func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -137,15 +122,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 // 		http.Redirect(w, r, "/", http.StatusSeeOther)
 // 	}
 // }
-func checkLength(field string, value string) bool {
-	return (len(value) >= lengthReq[field][0] && len(value) <= lengthReq[field][1])
-}
-
-func checkCharacters(field string, value string) bool {
-	match := regexp.MustCompile(characterReq[field]).MatchString(value)
-	return match
-}
-
 func submitPost(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	if r.Method == "OPTIONS" {
@@ -167,4 +143,43 @@ func submitPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post.Insert()
+}
+
+func IsUnique(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var user data.User
+
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		log.Println(err)
+		errors.ServerError(w, err)
+		return
+	}
+
+	var field = "Email" 
+	var value = user.Email
+	if user.Email == "" {field = "Nickname"; value = user.Nickname} 
+	
+	if data.IfUserExist(field, value) {
+		resp, err := json.Marshal(false)
+		if err != nil {
+			errors.ServerError(w, err)
+		}
+		w.Write(resp)
+		return
+	}
+	resp, err := json.Marshal(true)
+	if err != nil {
+		errors.ServerError(w, err)
+	}
+	w.Write(resp)
 }

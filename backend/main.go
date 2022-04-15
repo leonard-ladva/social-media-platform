@@ -11,6 +11,7 @@ import (
 func setupRoutes() {
 	// http.HandleFunc("/login", handlers.Login)
 	http.HandleFunc("/register", handlers.Register)
+	http.HandleFunc("/isUnique", handlers.IsUnique)
 }
 
 func main() {
