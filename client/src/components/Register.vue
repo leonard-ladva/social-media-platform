@@ -148,7 +148,7 @@
 <script>
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, maxLength, between, sameAs, alpha, alphaNum, integer, helpers } from '@vuelidate/validators'
-import axios from 'axios'
+import axios from '../plugins/axios'
 const { withAsync, withMessage } = helpers
 
 export default {
@@ -171,9 +171,9 @@ export default {
 			firstName:		{ required, maxLength: maxLength(50), alpha },
 			lastName:		{ required, maxLength: maxLength(50), alpha },
 			email:			{ required, email,
-			isUnique: withAsync(withMessage('Oops, Email already in use', async (value) => {
+				isUnique: withAsync(withMessage('Oops, Email already in use', async (value) => {
 					if (value === '') return true
-					const resp = await axios.post('http://localhost:9100/isUnique', {Email: value})
+					const resp = await axios.post('isUnique', {Email: value})
 					return resp.data 
 				})) },
 			password:		{ required, minLength: minLength(8), maxLength: maxLength(50) },
@@ -181,7 +181,7 @@ export default {
 			nickname:		{ required, minLength: minLength(3), maxLength: maxLength(20), alphaNum, 
 				isUnique: withAsync(withMessage('Oops, Nickname already taken', async (value) => {
 					if (value === '') return true
-					const resp = await axios.post('http://localhost:9100/isUnique', {Nickname: value})
+					const resp = await axios.post('isUnique', {Nickname: value})
 					return resp.data 
 				})) },
 			gender:			{ required, maxLength: maxLength(50), alpha },
@@ -193,7 +193,7 @@ export default {
 			const ifFormCorrect = await this.v$.$validate()
 			if (!ifFormCorrect) return
 		
-			const response = await axios.post('http://localhost:9100/register', {
+			await axios.post('register', {
 				firstName: this.firstName,
 				lastName: this.lastName,
 				email: this.email,
@@ -203,13 +203,21 @@ export default {
 				gender: this.gender,
 				age: this.age,
 			})
-			console.log(response.data)
+			this.$router.push('/login')
 		},
-		// async isEmailAvailable() {
-		// 	const response = await axios.post('https://localhost:9100/checkEmail', {
-		// 		email: this.email,	
-		// 	})
-		// 	console.log(response.data)
+		// async isUnique(field, value) {
+		// 	console.log(field, value)
+		// 	if (value === '') return
+
+		// 	// const data = `{${field}: ${value}}`
+		// 	if (field === 'Email') {
+		// 		const resp = await axios.post('isUnique', {Email: value})
+		// 		console.log(resp.data)
+		// 		return resp.data
+		// 	} 
+		// 	const resp = await axios.post('isUnique', {Nickname: value})
+		// 	console.log(resp.data, typeof resp.data)
+		// 	return resp.data
 		// }
 	},
 }

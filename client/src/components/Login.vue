@@ -1,35 +1,48 @@
 <template>
-	<form method="post">
+	<form @submit.prevent="handleSubmit">
 		<h3>Login</h3>	
+	
+		<div class="form-group">
+			<label>Nickname or Email</label>
+			<input class="form-control"
+			v-model="nickname"
+			autocomplete="username"
+			placeholder="Nickname or Email"/>
+		</div>
 
 		<div class="form-group">
-			<!-- <BaseInput 
-			v-model="login.email"	
-			label="Email"
-			type="email"
-			/> -->
-			<label>Email
-        <input type="email" class="form-control" placeholder="Email"/>
-      </label>
-    </div>
-
-		<div class="form-group">
-			<!-- <BaseInput
-			v-model="login.password"
-			label="Password"
+			<label>Password</label>
+			<input class="form-control"
 			type="password"
-			/> -->
-			<label>Password
-        <input type="password" class="form-control" placeholder="Password"/>
-      </label>
-    </div>
+			v-model="password"
+			autocomplete="password"
+			placeholder="Password"/>
+		</div>
 
 		<button class="btn btn-primary btn-block">Login</button>
 	</form>	
 </template>
 
 <script>
+	import axios from '../plugins/axios'
+
 	export default {
 		name: 'LoginForm',
+		data() {
+			return {
+				nickname: '',
+				password: '',
+			}
+		},
+		methods: {
+			async handleSubmit() {
+				const resp = await axios.post('login', {
+					nickname: this.nickname,
+					passwordPlain: this.password,
+				})
+
+				localStorage.setItem('Token', resp.data.Token)
+			}
+		}
 	}
 </script>

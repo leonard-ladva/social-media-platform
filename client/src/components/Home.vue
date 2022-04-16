@@ -3,7 +3,14 @@
 </template>
 
 <script>
+	import axios from '../plugins/axios'
+
 	export default {
-		name: 'HomeSmth'	
+		name: 'HomePage',
+		async created() {
+			const resp = await axios.get('user')
+
+			console.log(resp)
+		}
 	}
 </script>
