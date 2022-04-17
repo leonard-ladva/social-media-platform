@@ -3,19 +3,20 @@ package data
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
 	"math/rand"
 	"net/url"
 	"regexp"
 	"strconv"
 	"time"
 
-	"git.01.kood.tech/Rostislav/real-time-forum/errors"
+	"golang.org/x/crypto/bcrypt"
 
 	uuid "github.com/satori/go.uuid"
 )
 
+// lengthReq specifies the min-max lenghts of user data fields
 var lengthReq = map[string][]int{
 	"Nickname":  {3, 20},
 	"Password":  {8, 50},
@@ -24,6 +25,7 @@ var lengthReq = map[string][]int{
 	"Gender":    {1, 50},
 }
 
+// characterReq specifies the allowed characters and format of user data fields
 var characterReq = map[string]string{
 	"Nickname":  "^[a-zA-Z0-9]*$", // letters, numbers
 	"Password":  "^[ -~]*$",       // all ascii characres in range space to ~
@@ -35,6 +37,7 @@ var characterReq = map[string]string{
 
 type StringInt int
 
+// UnmarshalJSON unmarshals user data to a struct
 func (st *StringInt) UnmarshalJSON(b []byte) error {
 	var item interface{}
 	if err := json.Unmarshal(b, &item); err != nil {
@@ -54,62 +57,71 @@ func (st *StringInt) UnmarshalJSON(b []byte) error {
 	}
 	return nil
 }
-func GetUserByUserName(username string) User {
-	var user User
-	cmd := "SELECT ID, Nickname, Password, Email, FirstName, LastName, Gender, Age, Color, CreatedAt FROM user WHERE Nickname = ? OR Email = ?"
-	row := DB.QueryRow(cmd, username)
 
-	row.Scan(&user.ID, &user.Nickname, &user.Password, &user.Email, &user.FirstName, &user.LastName, &user.Gender, &user.Age, &user.Color, &user.CreatedAt)
-	log.Println("Getting user from database | User: ", username)
-	return user
-}
-
-func IfUserExist(field string, value string) bool {
-	var user User
-	cmd := fmt.Sprintf(`SELECT Nickname, Email FROM user WHERE %s = ?`, field)
+// GetUser gets a user from the database
+func GetUser(field string, value string) (bool, User, error) {
+	var u User
+	cmd := fmt.Sprintf(`SELECT ID, Email, Password, Nickname, FirstName, LastName, Gender, Age, Color, CreatedAt FROM user WHERE %s = ?`, field)
 	row := DB.QueryRow(cmd, value)
-	err := row.Scan(&user.Nickname, &user.Email)
+	err := row.Scan(&u.ID, &u.Email, &u.Password, &u.Nickname, &u.FirstName, &u.LastName, &u.Gender, &u.Age, &u.Color, &u.CreatedAt)
 	if err == sql.ErrNoRows {
-		return false
+		return false, u, nil
 	} else if err != nil {
-		errors.ErrorLog.Print(err)
+		return false, u, errors.New("data: getting user")
 	}
-	return true
+	return true, u, nil
 }
 
-func (user *User) Insert() {
+// Insert generates missing fields and insertes a new user into the database
+func (user *User) Insert() error {
 	stmt, err := DB.Prepare("INSERT INTO User (ID, Email, Password, Nickname, FirstName, LastName, Gender, Age, Color, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
 	if err != nil {
-		errors.ErrorLog.Print("Database: failed when inserting user to database.")
+		return errors.New("data: inserting user")
 	}
 	defer stmt.Close()
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.PasswordPlain), 10)
+	if err != nil {
+		return errors.New("data: generating password hash")
+	}
+	user.Password = passwordHash
 
 	id := uuid.NewV4()
 	color := newPastelColor()
 	createdAt := time.Now().UnixNano()
 
 	stmt.Exec(id, user.Email, user.Password, user.Nickname, user.FirstName, user.LastName, user.Gender, user.Age, color, createdAt)
+	return nil
 }
 
+// NewPastelColor generates a color code for a random pastel color
 func newPastelColor() string {
 	rand.Seed(time.Now().UnixNano())
-
 	return "hsl(" + strconv.Itoa(rand.Intn(360-0)) + "," +
 		strconv.Itoa(25+rand.Intn(70-0)) + "%," +
 		strconv.Itoa(85+rand.Intn(10-0)) + "%)"
 }
 
-func (u *User) IsValid() (url.Values) {
-	errs := url.Values{} 
+// IsValid check all the user fields and returns true if valid
+func (u *User) IsValid() (bool, error) {
+	errs := url.Values{}
 	// Email
-	if IfUserExist("Email", u.Email) {
+	exists, _, err := GetUser("Email", u.Email)
+	if err != nil {
+		return false, err
+	}
+	if exists {
 		errs.Add("Email", "Email already in use")
 	}
 	if !checkCharacters("Email", u.Email) {
 		errs.Add("Email", "Please enter a valid email")
 	}
 	// Nickname
-	if IfUserExist("Nickname", u.Nickname) {
+	exists, _, err = GetUser("Nickname", u.Nickname)
+	if err != nil {
+		return false, err
+	}
+	if exists {
 		errs.Add("Nickname", "Sorry! Nickname already taken")
 	}
 	if !checkCharacters("Nickname", u.Nickname) || !checkLength("Nickname", u.Nickname) {
@@ -140,14 +152,19 @@ func (u *User) IsValid() (url.Values) {
 		errs.Add("Gender", fmt.Sprintf("Gender has to be between %d and %d characters and contain only letters",
 			lengthReq["Gender"][0], lengthReq["Gender"][1]))
 	}
-	
-	return errs
+	if len(errs) != 0 {
+		fmt.Println("Form Errors: ", errs)
+		return false, nil
+	}
+	return true, nil
 }
 
+// checkLength checks a user field length based on var lenghtReq
 func checkLength(field string, value string) bool {
 	return (len(value) >= lengthReq[field][0] && len(value) <= lengthReq[field][1])
 }
 
+// checkCharacters checks a user field chars besed on var characterReq
 func checkCharacters(field string, value string) bool {
 	match := regexp.MustCompile(characterReq[field]).MatchString(value)
 	return match

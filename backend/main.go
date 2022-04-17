@@ -9,13 +9,17 @@ import (
 )
 
 func setupRoutes() {
-	// http.HandleFunc("/login", handlers.Login)
+	http.HandleFunc("/login", handlers.Login)
 	http.HandleFunc("/register", handlers.Register)
 	http.HandleFunc("/isUnique", handlers.IsUnique)
+	http.HandleFunc("/user", handlers.Session)
 }
 
 func main() {
-	data.Connect()
+	err := data.Connect()
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println("Database Connected")
 
 	setupRoutes()

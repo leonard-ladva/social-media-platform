@@ -2,7 +2,6 @@ package data
 
 import (
 	"database/sql"
-	"time"
 )
 
 type DBModel struct {
@@ -24,7 +23,7 @@ type Comment struct {
 	UserID    string
 	PostID    string
 	Content   string
-	CreatedAt time.Time
+	CreatedAt int64
 }
 
 type Message struct {
@@ -32,22 +31,22 @@ type Message struct {
 	UserID    string
 	MessageNr int
 	Content   string
-	CreatedAt time.Time
+	CreatedAt int64
 }
 
 type Post struct {
-	ID        string    `json:"id"`
-	UserID    string    `json:"userId"`
-	Content   string    `json:"content"`
-	Tag       string    `json:"tag"`
-	TagID     string    `json:"tagId"`
-	CreatedAt time.Time `json:"createdAt"`
+	ID        string `json:"id"`
+	UserID    string `json:"userId"`
+	Content   string `json:"content"`
+	Tag       string `json:"tag"`
+	TagID     string `json:"tagId"`
+	CreatedAt int64  `json:"createdAt"`
 }
 
 type Session struct {
 	ID        string
 	UserID    string
-	CreatedAt time.Time
+	CreatedAt int64
 }
 
 type User struct {
@@ -62,5 +61,5 @@ type User struct {
 	Gender          string    `json:"gender"`
 	Age             StringInt `json:"age"`
 	Color           string    `json:"color"`
-	CreatedAt       time.Time `json:"createdAt"`
+	CreatedAt       int64     `json:"createdAt"`
 }
