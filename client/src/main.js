@@ -6,14 +6,24 @@ import { createStore} from 'vuex'
 const store = createStore({
 	state () {
 		return {
-			count: 0
+			user: null,
+		}
+	},
+	getters: {
+		user: (state) => {
+			return state.user
+		}
+	},
+	actions: {
+		user(context, user) {
+			context.commit('user', user)
 		}
 	},
 	mutations: {
-		increment (state) {
-			state.count ++
+		user(state, user) {
+			state.user = user
 		}
-	}
+	},
 })
 
 

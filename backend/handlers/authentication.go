@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -11,7 +10,6 @@ import (
 	"strings"
 
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
-	uuid "github.com/satori/go.uuid"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,14 +18,17 @@ type StringInt int
 
 type LoginResponse struct {
 	Message string
-	Token   uuid.UUID
+	Token   interface{}
 	User    UserInfo
 }
 
 type UserInfo struct {
-	ID       string
-	Email    string
-	NickName string
+	Id        string
+	Email     string
+	Nickname  string
+	FirstName string
+	LastName  string
+	Gender    string
 }
 
 func (st *StringInt) UnmarshalJSON(b []byte) error {
@@ -140,7 +141,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	var user data.User
@@ -160,6 +162,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		nickOrEmail = "Email"
 		value = user.Email
 	}
+	// Check if user with email/nickname exists
 	exists, dbUser, err := data.GetUser(nickOrEmail, value)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -169,6 +172,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+	// Check if provided password mathces the one in the db
 	err = bcrypt.CompareHashAndPassword(dbUser.Password, []byte(user.PasswordPlain))
 	if err != nil {
 		log.Printf("Wrong password for user with %s of %s", nickOrEmail, value)
@@ -178,19 +182,23 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	user = dbUser
 
 	log.Println("LOGIN: Info OK")
-
+	// Add a session to the db
 	token, err := user.AddSession()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	// Send a successful login response to the client
 	response := LoginResponse{
 		Message: "Success",
 		Token:   token,
 		User: UserInfo{
-			ID:       user.ID,
-			Email:    user.Email,
-			NickName: user.Nickname,
+			Id:        user.ID,
+			Email:     user.Email,
+			Nickname:  user.Nickname,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			Gender:    user.Gender,
 		},
 	}
 
@@ -210,7 +218,6 @@ func Session(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := r.Header.Get("Authorization")[7:]
-	fmt.Println(token)
 
 	session, err := data.GetSession(token)
 	if err == sql.ErrNoRows {
@@ -222,14 +229,24 @@ func Session(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var user data.User
-	user.Password = []byte("")
 	_, user, err = data.GetUser("ID", session.UserID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	data, err := json.Marshal(user)
+	user.Password = []byte("")
+	response := LoginResponse{
+		Message: "Success",
+		Token:   token,
+		User: UserInfo{
+			Id:        user.ID,
+			Nickname:  user.Nickname,
+			Email:     user.Email,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+		},
+	}
+	data, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

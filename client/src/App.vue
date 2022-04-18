@@ -11,12 +11,18 @@
 
 <script>
 import NavBar from './components/Nav.vue'
+import axios from './plugins/axios'
 
 export default {
-  name: 'App',
-  components: {
-    NavBar,
-  },
+	name: 'App',
+	components: {
+		NavBar,
+	},
+	async created () {
+		const response = await axios.get('user')
+
+		this.$store.dispatch('user', response.data.User)
+	}
 }
 </script>
 

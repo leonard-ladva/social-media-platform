@@ -1,16 +1,17 @@
 <template>
-	<h3>Helloss</h3>	
+<div>
+	<h3 v-if="user">Hi, {{ user.FirstName }} {{ user.LastName }}!</h3>
+	<h3 v-if="!user">You are not logged in!</h3>	
+</div>
 </template>
 
 <script>
-	import axios from '../plugins/axios'
+	import { mapGetters } from 'vuex'
 
 	export default {
 		name: 'HomePage',
-		async created() {
-			const resp = await axios.get('user')
-
-			console.log(resp)
+		computed: {
+			...mapGetters(['user'])
 		}
 	}
 </script>

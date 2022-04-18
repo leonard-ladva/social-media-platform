@@ -40,8 +40,9 @@
 					nickname: this.nickname,
 					passwordPlain: this.password,
 				})
-
-				localStorage.setItem('Token', resp.data.Token)
+				localStorage.setItem('token', resp.data.Token)
+				this.$store.dispatch('user', resp.data.User)
+				this.$router.push('/')
 			}
 		}
 	}
