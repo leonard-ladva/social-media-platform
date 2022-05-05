@@ -59,8 +59,8 @@ func (st *StringInt) UnmarshalJSON(b []byte) error {
 }
 
 // GetUser gets a user from the database
-func GetUser(field string, value string) (bool, User, error) {
-	var u User
+func GetUser(field string, value string) (bool, *User, error) {
+	u := &User{}
 	cmd := fmt.Sprintf(`SELECT ID, Email, Password, Nickname, FirstName, LastName, Gender, Age, Color, CreatedAt FROM user WHERE %s = ?`, field)
 	row := DB.QueryRow(cmd, value)
 	err := row.Scan(&u.ID, &u.Email, &u.Password, &u.Nickname, &u.FirstName, &u.LastName, &u.Gender, &u.Age, &u.Color, &u.CreatedAt)
@@ -88,7 +88,7 @@ func (user *User) Insert() error {
 
 	id := uuid.NewV4()
 	color := newPastelColor()
-	createdAt := time.Now().UnixNano()
+	createdAt := currentTime() 
 
 	stmt.Exec(id, user.Email, user.Password, user.Nickname, user.FirstName, user.LastName, user.Gender, user.Age, color, createdAt)
 	return nil

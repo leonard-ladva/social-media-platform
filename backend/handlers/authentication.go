@@ -19,7 +19,7 @@ type StringInt int
 type LoginResponse struct {
 	Message string
 	Token   interface{}
-	User    UserInfo
+	User	*data.User 
 }
 
 type UserInfo struct {
@@ -73,7 +73,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	valid, err := user.IsValid()
 	if valid {
-		user.Insert()
+		err := user.Insert()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 		return
 	}
@@ -145,7 +149,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user data.User
+	user := &data.User{}
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {
@@ -192,14 +196,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	response := LoginResponse{
 		Message: "Success",
 		Token:   token,
-		User: UserInfo{
-			Id:        user.ID,
-			Email:     user.Email,
-			Nickname:  user.Nickname,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			Gender:    user.Gender,
-		},
+		User: user,
+		// UserInfo{
+		// 	Id:        user.ID,
+		// 	Email:     user.Email,
+		// 	Nickname:  user.Nickname,
+		// 	FirstName: user.FirstName,
+		// 	LastName:  user.LastName,
+		// 	Gender:    user.Gender,
+		// },
 	}
 
 	data, err := json.Marshal(response)
@@ -210,7 +215,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-// Session checks if the client in logged in
+// Session checks if the client has token present in the db
 func Session(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	if r.Method == "OPTIONS" {
@@ -228,7 +233,7 @@ func Session(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	var user data.User
+	user := &data.User{}
 	_, user, err = data.GetUser("ID", session.UserID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -238,13 +243,14 @@ func Session(w http.ResponseWriter, r *http.Request) {
 	response := LoginResponse{
 		Message: "Success",
 		Token:   token,
-		User: UserInfo{
-			Id:        user.ID,
-			Nickname:  user.Nickname,
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-		},
+		User: user,
+		// UserInfo{
+		// 	Id:        user.ID,
+		// 	Nickname:  user.Nickname,
+		// 	Email:     user.Email,
+		// 	FirstName: user.FirstName,
+		// 	LastName:  user.LastName,
+		// },
 	}
 	data, err := json.Marshal(response)
 	if err != nil {

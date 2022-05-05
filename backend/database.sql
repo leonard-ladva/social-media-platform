@@ -2,6 +2,7 @@
 CREATE TABLE "Tag"(
   "ID" TEXT NOT NULL,
   "Title" TEXT NOT NULL,
+  "CreatedAt" INTEGER NOT NULL,
   PRIMARY KEY("ID"),
   UNIQUE("Title")
 );

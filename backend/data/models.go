@@ -8,9 +8,10 @@ type DBModel struct {
 	DB *sql.DB
 }
 
-type Category struct {
-	ID    string
-	Title string
+type Tag struct {
+	ID    string `json:"id"`
+	Title string `json:"title"`
+	CreatedAt int64 `json:"createdAt"`
 }
 
 type Chat struct {

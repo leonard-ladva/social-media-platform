@@ -3,7 +3,6 @@ package data
 import (
 	"errors"
 	"log"
-	"time"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -20,7 +19,7 @@ func (user User) AddSession() (uuid.UUID, error) {
 		return token, errors.New("data: inserting session")
 	}
 
-	statement.Exec(token, user.ID, time.Now().UnixNano())
+	statement.Exec(token, user.ID, currentTime())
 	return token, nil
 }
 

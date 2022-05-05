@@ -1,12 +1,17 @@
 package data
 
 import (
-	"time"
+	"database/sql"
 	"errors"
+	"fmt"
 
-	// "git.01.kood.tech/Rostislav/real-time-forum/errors"
 	uuid "github.com/satori/go.uuid"
 )
+
+var postAllowedChars = map[string]string{
+	"Content": "^[a-zA-Z0-9]*$", // letters, numbers
+	"Tag":     "^[ -~]*$",       // all ascii characres in range space to ~
+}
 
 func (post *Post) Insert() error {
 	stmt, err := DB.Prepare("INSERT INTO Post (ID, UserID, Content, TagID, CreatedAt) VALUES (?, ?, ?, ?, ?);")
@@ -15,27 +20,54 @@ func (post *Post) Insert() error {
 	}
 	defer stmt.Close()
 
-	post.TagID, err = getTagId(post.Tag)
+	fmt.Println("here")
+
+	tag, err := getTagByTitle(post.Tag)
+	if err == sql.ErrNoRows {
+		tag := &Tag{}
+		tag.Title = post.Tag
+		tag, err = tag.Insert()
+		if err != nil {
+			return err
+		}
+		err = nil
+		post.TagID = tag.ID
+	}
 	if err != nil {
 		return errors.New("data: getting post TagID")
 	}
 	id := uuid.NewV4()
-	createdAt := time.Now().UnixNano()
+	createdAt := currentTime()
 
-	// temporary
-	post.UserID = "beb8e5c6-c33e-4306-8725-fa07aa89f2f4"
-	stmt.Exec(id, post.UserID, post.Content, post.TagID, createdAt)
+	stmt.Exec(id, post.UserID, post.Content, tag.ID, createdAt)
 	return nil
 }
 
-// getTagId gets the tagId of the post from the database
-func getTagId(title string) (string, error) {
-	var post Post
-	query := "SELECT ID FROM Tag WHERE Title = ?"
-	row := DB.QueryRow(query, title)
-	err := row.Scan(&post.TagID)
-	if err != nil {
-		return "", err
+func LatestPosts(lastEarliestPost string) ([]*Post, error) {
+	var posts []*Post
+	query := "SELECT ID, Content, TagID, UserId, CreatedAt FROM Post ORDER BY CreatedAt DESC LIMIT 5"
+	if lastEarliestPost != "-1" {
+		query = fmt.Sprintf("SELECT ID, Content, TagID, UserId, CreatedAt FROM Post WHERE CreatedAt < %s ORDER BY CreatedAt DESC LIMIT 5", lastEarliestPost)
 	}
-	return post.TagID, nil
+	rows, err := DB.Query(query)
+	if err == sql.ErrNoRows {
+		return posts, nil
+	}
+	if err != nil {
+		fmt.Println(err)
+		return nil, errors.New("data: getting posts")
+	}
+
+	for rows.Next() {
+		post := &Post{}
+
+		err := rows.Scan(&post.ID, &post.Content, &post.TagID, &post.UserID, &post.CreatedAt)
+		if err != nil {
+			fmt.Println(err)
+			return nil, errors.New("data: getting posts")
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
 }

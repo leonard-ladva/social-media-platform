@@ -9,10 +9,16 @@ import (
 )
 
 func setupRoutes() {
+	// Authentication
 	http.HandleFunc("/login", handlers.Login)
 	http.HandleFunc("/register", handlers.Register)
 	http.HandleFunc("/isUnique", handlers.IsUnique)
 	http.HandleFunc("/user", handlers.Session)
+	// Posts
+	http.HandleFunc("/submitPost", handlers.Submit)
+	http.HandleFunc("/latestPosts", handlers.LatestPosts)
+	// Tags
+	http.HandleFunc("/tags", handlers.GetTagsHandler)
 }
 
 func main() {
