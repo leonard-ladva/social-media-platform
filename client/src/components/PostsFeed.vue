@@ -8,7 +8,7 @@
 			:user="post.user"
 			:tag="post.tag"
 		/>
-		<TriggerIntersect id="trigger" @triggerIntersected="getPosts"/>
+		<TriggerIntersect id="trigger" @triggerIntersected="getPosts" />
 		<h4 id="feedEnd">
 			You've reached the end
 		</h4>

@@ -24,6 +24,8 @@ export default {
 			return 'background-color: ' + this.user.color
 		}, 
 		dateTime() {
+			const millisecondsInMinute = 36000
+			const millisecondsInHour = 3600000
 			let date = new Date(this.post.createdAt)
 			let now =  new Date()
 
@@ -35,7 +37,14 @@ export default {
 				first.getMonth() === second.getMonth() && 
 				first.getDate() === second.getDate()
 			}
-			return isSameDay(date, now) ? (Math.floor((now.getTime() - date.getTime()) / 3600000)).toString() + 'h' : month + ' ' + day
+			const isSameHour = (first, second) => {
+				return isSameDay && first.getHours() === second.getHours()
+			}
+			
+			let time = 	!isSameDay(date, now) ?  month + ' ' + day :
+						!isSameHour(date, now) ? (Math.floor((now.getTime() - date.getTime()) / millisecondsInHour)).toString() + 'h' : 
+						(Math.floor((now.getTime() - date.getTime()) / millisecondsInMinute)).toString() + 'm'
+			return time
 		}
 	}
 }
