@@ -21,6 +21,7 @@ func setupRoutes() {
 	http.HandleFunc("/tags", handlers.GetTagsHandler)
 	// Chats
 	http.HandleFunc("/users", handlers.GetAllUsers)
+	http.HandleFunc("/ws", handlers.WebSocket)
 }
 
 func main() {
