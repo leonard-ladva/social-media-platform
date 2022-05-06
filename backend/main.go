@@ -19,6 +19,8 @@ func setupRoutes() {
 	http.HandleFunc("/latestPosts", handlers.LatestPosts)
 	// Tags
 	http.HandleFunc("/tags", handlers.GetTagsHandler)
+	// Chats
+	http.HandleFunc("/users", handlers.GetAllUsers)
 }
 
 func main() {

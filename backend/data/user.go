@@ -169,3 +169,29 @@ func checkCharacters(field string, value string) bool {
 	match := regexp.MustCompile(characterReq[field]).MatchString(value)
 	return match
 }
+
+func GetAllUsers() ([]*User, error) {
+	var users []*User
+	query := "SELECT ID, Nickname, Color, CreatedAt FROM User ORDER BY Nickname ASC"
+	rows, err := DB.Query(query)
+	if err == sql.ErrNoRows {
+		return users, nil
+	}
+	if err != nil {
+		fmt.Println(err)
+		return nil, errors.New("data: getting users")
+	}
+
+	for rows.Next() {
+		user := &User{}
+
+		err := rows.Scan(&user.ID, &user.Nickname, &user.Color, &user.CreatedAt)
+		if err != nil {
+			fmt.Println(err)
+			return nil, errors.New("data: getting users")
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}

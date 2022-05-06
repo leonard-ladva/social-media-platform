@@ -1,22 +1,19 @@
 <template>
 	<div id="sidebar">
-		<!-- Logged in user -->
-		<!-- Log out button -->
-		<!-- List of chats orderded by last message time or else alphabetically-->
-			<!-- Active users -->
-			<!-- Other users -->
 		<div id="currentUser">
 			<p class="title">Logged in user</p>
-			<div id="userInfo">
-				<span class="profilePicture" :style="style"></span>
-				<span class="nickname">{{ user.nickname }}</span>
-			</div>
+			<UserCard :user="currentUser" />
 			<a class="logout" href="javascript:void(0)" @click="handleClick">Log out</a>
 		</div>
+
 		<div id="activeUsers">
 			<h3>Active Users</h3>
-
+			<UserCard 
+			v-for="activeUser in activeUsers" 
+			:user="activeUser"
+			:key="activeUser.id" />
 		</div>
+
 		<div id="unactiveUsers">
 			<h3>Offline Users</h3>
 
@@ -26,9 +23,17 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import axios from 'axios'
+import UserCard from './UserCard.vue'
 
 export default {
 	name: 'SideBar',
+	data() {
+		return {
+			activeUsers: '',
+			inactiveUsers: '',
+		}
+	},
 	methods: {
 		handleClick() {
 			localStorage.removeItem('token')
@@ -38,10 +43,18 @@ export default {
 	},
 	computed: {
 		...mapGetters(['user']),
-		style() {
-			return 'background-color: ' + this.$store.state.user.color
-		},
+		currentUser() {
+			return this.$store.state.user
+		}
 	},
+	async created() {
+		let response = await axios.get('/users')
+		console.log(response.data)
+		this.activeUsers = response.data
+	},
+	components: {
+		UserCard,
+	}
 }
 </script>
 
@@ -51,20 +64,22 @@ export default {
 		border-color: rgb(247, 249, 249);
 		border-radius: 20px;
 	}
-	#userInfo {
+	.userCard {
 		background-color: rgb(239, 243, 244);
 		height: 55px;
 		border-radius: 30px;
 		display: flex;
 		align-items: center;
 	}
-	#userInfo .profilePicture {
+	.userCard .profilePicture {
 		height: 45px;
 		width: 45px;	
 		margin: 5px;
 	}
-
-	#userInfo .nickname {
+	#activeUsers .userCard {
+		margin: 10px 0;
+	}
+	.userCard .nickname {
 		width: calc(100% - 80px);
 		overflow: hidden;
 		text-overflow: ellipsis;
