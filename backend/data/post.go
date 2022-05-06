@@ -63,7 +63,6 @@ func LatestPosts(lastEarliestPost string) ([]*Post, error) {
 
 		err := rows.Scan(&post.ID, &post.Content, &post.TagID, &post.UserID, &post.CreatedAt)
 		if err != nil {
-			fmt.Println(err)
 			return nil, errors.New("data: getting posts")
 		}
 		posts = append(posts, post)

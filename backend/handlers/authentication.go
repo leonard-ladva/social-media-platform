@@ -19,7 +19,7 @@ type StringInt int
 type LoginResponse struct {
 	Message string
 	Token   interface{}
-	User	*data.User 
+	User    *data.User
 }
 
 type UserInfo struct {
@@ -60,6 +60,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -67,6 +68,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	var user data.User
 	err = json.Unmarshal(body, &user)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -75,6 +77,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	if valid {
 		err := user.Insert()
 		if err != nil {
+			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -94,6 +97,7 @@ func IsUnique(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -102,6 +106,7 @@ func IsUnique(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -115,12 +120,14 @@ func IsUnique(w http.ResponseWriter, r *http.Request) {
 
 	exists, _, err := data.GetUser(field, value)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if exists {
 		resp, err := json.Marshal(false)
 		if err != nil {
+			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -130,6 +137,7 @@ func IsUnique(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := json.Marshal(true)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -145,6 +153,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -153,6 +162,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -169,6 +179,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Check if user with email/nickname exists
 	exists, dbUser, err := data.GetUser(nickOrEmail, value)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -189,6 +200,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Add a session to the db
 	token, err := user.AddSession()
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -196,19 +208,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	response := LoginResponse{
 		Message: "Success",
 		Token:   token,
-		User: user,
-		// UserInfo{
-		// 	Id:        user.ID,
-		// 	Email:     user.Email,
-		// 	Nickname:  user.Nickname,
-		// 	FirstName: user.FirstName,
-		// 	LastName:  user.LastName,
-		// 	Gender:    user.Gender,
-		// },
+		User:    user,
 	}
 
 	data, err := json.Marshal(response)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -230,12 +235,14 @@ func Session(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	user := &data.User{}
 	_, user, err = data.GetUser("ID", session.UserID)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -243,17 +250,11 @@ func Session(w http.ResponseWriter, r *http.Request) {
 	response := LoginResponse{
 		Message: "Success",
 		Token:   token,
-		User: user,
-		// UserInfo{
-		// 	Id:        user.ID,
-		// 	Nickname:  user.Nickname,
-		// 	Email:     user.Email,
-		// 	FirstName: user.FirstName,
-		// 	LastName:  user.LastName,
-		// },
+		User:    user,
 	}
 	data, err := json.Marshal(response)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

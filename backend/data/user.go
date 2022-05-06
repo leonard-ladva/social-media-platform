@@ -41,7 +41,7 @@ type StringInt int
 func (st *StringInt) UnmarshalJSON(b []byte) error {
 	var item interface{}
 	if err := json.Unmarshal(b, &item); err != nil {
-		return err
+		return errors.New("data: unmarshaling user data") 
 	}
 	switch v := item.(type) {
 	case int:
@@ -51,7 +51,7 @@ func (st *StringInt) UnmarshalJSON(b []byte) error {
 	case string:
 		i, err := strconv.Atoi(v)
 		if err != nil {
-			return err
+			return errors.New("data: converting user age")
 		}
 		*st = StringInt(i)
 	}
@@ -82,7 +82,7 @@ func (user *User) Insert() error {
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.PasswordPlain), 10)
 	if err != nil {
-		return errors.New("data: generating password hash")
+		return errors.New("data: generating user password hash")
 	}
 	user.Password = passwordHash
 
@@ -108,7 +108,7 @@ func (u *User) IsValid() (bool, error) {
 	// Email
 	exists, _, err := GetUser("Email", u.Email)
 	if err != nil {
-		return false, err
+		return false, err 
 	}
 	if exists {
 		errs.Add("Email", "Email already in use")

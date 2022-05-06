@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
@@ -21,6 +22,7 @@ func Submit(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -29,12 +31,14 @@ func Submit(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &post)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	fmt.Println(post)
 	err = post.Insert()
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -58,7 +62,7 @@ func LatestPosts(w http.ResponseWriter, r *http.Request) {
 
 	posts, err := data.LatestPosts(lastEarliestPost)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -70,6 +74,7 @@ func LatestPosts(w http.ResponseWriter, r *http.Request) {
 		// Get tag by TagID
 		tag, err := data.GetTagByID(post.TagID)
 		if err != nil {
+			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -77,6 +82,7 @@ func LatestPosts(w http.ResponseWriter, r *http.Request) {
 		// Get User by UserID
 		_, user, err := data.GetUser("ID", post.UserID)
 		if err != nil {
+			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -90,6 +96,7 @@ func LatestPosts(w http.ResponseWriter, r *http.Request) {
 	data, err := json.Marshal(postsInfo)
 	// data, err := json.Marshal(posts)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
