@@ -9,18 +9,22 @@ import (
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
 )
 
-func enableCors(w *http.ResponseWriter) {
-	// (*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Content-type")
-	(*w).Header().Add("Access-Control-Allow-Headers", "Authorization")
-}
-func Authenticate(next http.HandlerFunc) http.HandlerFunc {
+func EnableCors(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		enableCors(&w)
+		// (*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		(w).Header().Set("Access-Control-Allow-Origin", "*")
+		(w).Header().Set("Access-Control-Allow-Headers", "Content-type")
+		(w).Header().Add("Access-Control-Allow-Headers", "Authorization")
+
 		if r.Method == "OPTIONS" {
 			return
 		}
+		next(w, r)
+	}
+}
+
+func Authenticate(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		// r.Header.Get("Authorization") returns "Bearer <ActualToken>", so we only need the second part
 		token := strings.Split(r.Header.Get("Authorization"), " ")[1]
 

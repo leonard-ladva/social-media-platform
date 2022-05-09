@@ -15,11 +15,6 @@ type postRequest struct {
 }
 
 func Submit(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
@@ -52,11 +47,6 @@ type PostInfo struct {
 }
 
 func LatestPosts(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	queryParams := r.URL.Query()
 	var lastEarliestPost = queryParams["lastEarliestPost"][0]
 

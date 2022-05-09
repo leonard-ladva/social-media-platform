@@ -43,11 +43,6 @@ func (st *StringInt) UnmarshalJSON(b []byte) error {
 
 // Register gets data from the client, checks the data, if data is valid inserts a new user to the database and responds to the client
 func Register(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
@@ -80,11 +75,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 // isUnique receives an email/nickname from the client and responds if it is available
 func IsUnique(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
@@ -136,11 +126,6 @@ func IsUnique(w http.ResponseWriter, r *http.Request) {
 
 // Login
 func Login(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
@@ -212,11 +197,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 // CurrentUser checks if the client has token present in the db
 func CurrentUser(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	// r.Header.Get("Authorization") returns "Bearer <ActualToken>", so we only need the second part
 	token := strings.Split(r.Header.Get("Authorization"), " ")[1]
 

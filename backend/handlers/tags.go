@@ -9,11 +9,6 @@ import (
 )
 
 func GetTagsHandler(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	tags, err := data.GetAllTags()
 	if err != nil {
 		log.Println(err)

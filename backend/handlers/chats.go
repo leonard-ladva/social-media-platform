@@ -11,11 +11,6 @@ import (
 )
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	users, err := data.GetAllUsers()
 	if err != nil {
 		log.Println(err)

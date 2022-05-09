@@ -6,23 +6,23 @@ import (
 
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
 	"git.01.kood.tech/Rostislav/real-time-forum/handlers"
-	"git.01.kood.tech/Rostislav/real-time-forum/middleware"
+	mid "git.01.kood.tech/Rostislav/real-time-forum/middleware"
 )
 var CurrentUser struct{}
 
 func setupRoutes() {
 	// Authentication
-	http.HandleFunc("/login", handlers.Login)
-	http.HandleFunc("/register", handlers.Register)
-	http.HandleFunc("/isUnique", handlers.IsUnique)
-	http.HandleFunc("/user", middleware.Authenticate(handlers.CurrentUser))
+	http.HandleFunc("/login", mid.EnableCors(handlers.Login))
+	http.HandleFunc("/register", mid.EnableCors(handlers.Register))
+	http.HandleFunc("/isUnique", mid.EnableCors(handlers.IsUnique))
+	http.HandleFunc("/user", mid.EnableCors(mid.Authenticate(handlers.CurrentUser)))
 	// Posts
-	http.HandleFunc("/submitPost", handlers.Submit)
-	http.HandleFunc("/latestPosts", handlers.LatestPosts)
+	http.HandleFunc("/submitPost", mid.EnableCors(mid.Authenticate(handlers.Submit)))
+	http.HandleFunc("/latestPosts", mid.EnableCors(mid.Authenticate(handlers.LatestPosts)))
 	// Tags
-	http.HandleFunc("/tags", handlers.GetTagsHandler)
+	http.HandleFunc("/tags", mid.EnableCors(mid.Authenticate(handlers.GetTagsHandler)))
 	// Chats
-	http.HandleFunc("/users", handlers.GetAllUsers)
+	http.HandleFunc("/users", mid.EnableCors(mid.Authenticate(handlers.GetAllUsers)))
 	http.HandleFunc("/ws", handlers.WebSocket)
 }
 
