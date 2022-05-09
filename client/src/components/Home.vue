@@ -1,26 +1,19 @@
 <template>
-<div id="homeWrapper">
-	<!-- <div id="titleBar">
-		<p>Home</p>
-	</div> -->
-	<div id="feed">
+	<div id="home">
+		<div id="mainView">
+			<div>
+				<h3 v-if="user">Hi, {{ user.firstName }} {{ user.lastName }}!</h3>
+				<h3 v-if="!user">You are not logged in!</h3>	
+			</div>
 
-		<div>
-			<h3 v-if="user">Hi, {{ user.firstName }} {{ user.lastName }}!</h3>
-			<h3 v-if="!user">You are not logged in!</h3>	
+			<router-view />
 		</div>
-
-		<MakePost/>
-		<PostsFeed/>
+		<SideBar/>
 	</div>
-	<SideBar/>
-</div>
 </template>
 
 <script>
 	import { mapGetters } from 'vuex'
-	import MakePost from './MakePost.vue'
-	import PostsFeed from './PostsFeed.vue'
 	import SideBar from './SideBar.vue'
 
 	export default {
@@ -29,21 +22,19 @@
 			...mapGetters(['user'])
 		},
 		components: {
-			MakePost,
-			PostsFeed,
 			SideBar,
 		},
 	}
 </script>
 
 <style>
-	#homeWrapper {
+	#home {
 		display: flex;
 		justify-content: space-between;
 		max-width: 900px;
 		margin: 0 auto;
 	}	
-	#feed {
+	#mainView {
 		margin-top: 3rem;
 		width: 65%;
 	}

@@ -47,8 +47,11 @@
 				})
 				localStorage.setItem('token', resp.data.Token)
 				this.$store.dispatch('user', resp.data.User)
-				this.$router.push('/')
+				this.$router.push('/feed')
 			}
+		},
+		created() {
+			this.$store.dispatch('user', null)
 		}
 	}
 </script>

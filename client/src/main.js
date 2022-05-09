@@ -2,12 +2,14 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { createStore } from 'vuex'
+import './assets/css/style.css'
 
 const store = createStore({
 	state () {
 		return {
-			user: {},
+			user: null,
 			tags: null,
+			allUsers: null,
 		}
 	},
 	getters: {
@@ -16,6 +18,9 @@ const store = createStore({
 		},
 		tags: (state) => {
 			return state.tags
+		},
+		allUsers: (state) => {
+			return state.allUsers
 		}
 	},
 	actions: {
@@ -24,6 +29,9 @@ const store = createStore({
 		}, 
 		tags(context, tags) {
 			context.commit('tags', tags)
+		},
+		allUsers(context, allUsers) {
+			context.commit('allUsers', allUsers)
 		}
 	},
 	mutations: {
@@ -32,7 +40,10 @@ const store = createStore({
 		},
 		tags(state, tags) {
 			state.tags = tags
-		}
+		},
+		allUsers(state, allUsers) {
+			state.allUsers = allUsers
+		},
 	},
 })
 

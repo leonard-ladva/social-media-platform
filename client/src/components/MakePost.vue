@@ -50,7 +50,7 @@
 <script>
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, helpers } from '@vuelidate/validators'
-import axios from 'axios'
+import axios from '../plugins/axios'
 import { mapGetters } from 'vuex'
 
 const printableChars = helpers.regex(/[ -~]/)

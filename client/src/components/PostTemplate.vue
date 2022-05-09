@@ -7,7 +7,7 @@
 		</div>
 		<div class="body">
 			<p>{{ post.content }}</p>
-			<p>{{ tag.title }}</p>
+			<span class="badge tag">{{ tag.title }}</span>
 		</div>
 	</div>
 </template>

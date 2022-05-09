@@ -1,22 +1,21 @@
 <template>
 	<div id="sidebar">
-		<div id="currentUser">
+		<div id="currentUser" v-if="$store.state.user">
 			<p class="title">Logged in user</p>
 			<UserCard :user="currentUser" />
-			<a class="logout" href="javascript:void(0)" @click="handleClick">Log out</a>
+			<a class="logout" href="javascript:void(0)" @click="logout">Log out</a>
 		</div>
 
-		<div id="activeUsers">
+		<div id="activeUsers" v-if="$store.state.allUsers">
 			<h3>Active Users</h3>
-			<UserCard 
-			v-for="activeUser in activeUsers" 
-			:user="activeUser"
-			:key="activeUser.id" />
+			<UserCard
+			v-for="user of $store.state.allUsers.values()" 
+			:user="user"
+			:key="user.id" />
 		</div>
 
 		<div id="unactiveUsers">
 			<h3>Offline Users</h3>
-
 		</div>
 	</div>	
 </template>
@@ -30,27 +29,29 @@ export default {
 	name: 'SideBar',
 	data() {
 		return {
-			activeUsers: '',
 			inactiveUsers: '',
 		}
 	},
 	methods: {
-		handleClick() {
+		logout() {
+			this.$router.push({name: 'login'})
 			localStorage.removeItem('token')
-			this.$store.dispatch('user', null)
-			this.$router.push('/login')
 		}
 	},
 	computed: {
-		...mapGetters(['user']),
+		...mapGetters(['user', 'allUsers']),
 		currentUser() {
 			return this.$store.state.user
 		}
 	},
 	async created() {
 		let response = await axios.get('/users')
-		console.log(response.data)
-		this.activeUsers = response.data
+
+		let users = new Map()
+		for (let user of response.data) {
+			users.set(user.id, user)
+		}
+		this.$store.dispatch('allUsers', users)
 	},
 	components: {
 		UserCard,
@@ -64,28 +65,9 @@ export default {
 		border-color: rgb(247, 249, 249);
 		border-radius: 20px;
 	}
-	.userCard {
-		background-color: rgb(239, 243, 244);
-		height: 55px;
-		border-radius: 30px;
-		display: flex;
-		align-items: center;
-	}
-	.userCard .profilePicture {
-		height: 45px;
-		width: 45px;	
-		margin: 5px;
-	}
+
 	#activeUsers .userCard {
 		margin: 10px 0;
-	}
-	.userCard .nickname {
-		width: calc(100% - 80px);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		font-size: 20px;
-		padding-bottom: 3px;
 	}
 	#currentUser .title {
 		font-family: Chirp Bold;
@@ -93,6 +75,5 @@ export default {
 	}
 	#currentUser .logout {
 		font-size: 0.8rem;
-		text-decoration: none;
 	}
 </style>

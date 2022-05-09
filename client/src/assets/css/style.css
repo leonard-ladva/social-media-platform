@@ -1,0 +1,78 @@
+	@font-face {
+		font-family: Chirp Regular;
+		src: url('../fonts/chirp-regular-web.ttf');
+	}
+	@font-face {
+		font-family: Chirp Bold;
+		src: url('../fonts/chirp-bold-web.ttf');
+	}
+	@font-face {
+		font-family: Chirp Heavy;
+		src: url('../fonts/chirp-heavy-web.ttf');
+	}
+	
+	* {
+		box-sizing: border-box;
+	}
+	
+	body {
+		min-height: 99vh;
+		display: flex; 
+		font-weight: 399;
+		font-family: 'Chirp Regular';
+	}
+	
+	h1, h2, h3, h4, h5, h6, label, span {
+		font-weight: 499;
+		font-family: 'Chirp Heavy';
+	}
+	
+	body, html, #app, #root, .auth-wrapper {
+		width: 99%;
+		height: 99%;
+	}
+	
+	#app {
+		text-align: center;
+	}
+	
+	.auth-wrapper {
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		text-align: left;
+	}
+	
+	.auth-inner {
+		width: 449px;
+		margin: auto;
+		background-color: #ffffff;
+		box-shadow: -1px 14px 80px rgba(34, 35, 58, 0.2);
+		padding: 39px 55px 45px 55px;
+		border-radius: 14px;
+		transition: all .2s;
+	}
+	
+	.auth-wrapper .form-control:focus {
+		border-color: #166bff;
+		box-shadow: none;
+	}
+	
+	.auth-wrapper h2 {
+		text-align: center;
+		margin: -1;
+		line-height: 0;
+		padding-bottom: 19px;
+	}
+	
+	.form-control-label {
+		font-weight: 399;
+	}
+	
+	.profilePicture {
+		height: 50px;
+		width: 50px;
+		border-radius: 50%;
+		display: inline-block;
+	}
+	
