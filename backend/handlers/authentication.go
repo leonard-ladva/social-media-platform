@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"io"
 	"log"
@@ -20,15 +19,6 @@ type LoginResponse struct {
 	Message string
 	Token   interface{}
 	User    *data.User
-}
-
-type UserInfo struct {
-	Id        string
-	Email     string
-	Nickname  string
-	FirstName string
-	LastName  string
-	Gender    string
 }
 
 func (st *StringInt) UnmarshalJSON(b []byte) error {
@@ -167,7 +157,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var nickOrEmail string = "NickName"
+	var nickOrEmail string = "Nickname"
 	var value string = user.Nickname
 	// Determine whether user inserted email or nickname
 	if strings.Contains(user.Nickname, "@") {
@@ -220,33 +210,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-// Session checks if the client has token present in the db
-func Session(w http.ResponseWriter, r *http.Request) {
+// CurrentUser checks if the client has token present in the db
+func CurrentUser(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	if r.Method == "OPTIONS" {
 		return
 	}
 
-	token := r.Header.Get("Authorization")[7:]
+	// r.Header.Get("Authorization") returns "Bearer <ActualToken>", so we only need the second part
+	token := strings.Split(r.Header.Get("Authorization"), " ")[1]
 
-	session, err := data.GetSession(token)
-	if err == sql.ErrNoRows {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	user := &data.User{}
-	_, user, err = data.GetUser("ID", session.UserID)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	var user = data.CurrentUser
 	user.Password = []byte("")
+
 	response := LoginResponse{
 		Message: "Success",
 		Token:   token,
@@ -259,5 +235,4 @@ func Session(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(data)
-
 }

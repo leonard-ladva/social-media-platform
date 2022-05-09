@@ -35,7 +35,7 @@ export default {
 
 			this.connection.onopen = function(event) {
 				console.log(event)
-				console.log("Successfully connected to the echo websocket server...")
+				console.log("Successfully connected to the websocket")
 			}
 		},
 		sendMessage(message) {

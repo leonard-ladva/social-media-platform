@@ -15,6 +15,7 @@ import (
 
 	uuid "github.com/satori/go.uuid"
 )
+var CurrentUser *User
 
 // lengthReq specifies the min-max lenghts of user data fields
 var lengthReq = map[string][]int{
@@ -41,7 +42,7 @@ type StringInt int
 func (st *StringInt) UnmarshalJSON(b []byte) error {
 	var item interface{}
 	if err := json.Unmarshal(b, &item); err != nil {
-		return errors.New("data: unmarshaling user data") 
+		return errors.New("data: unmarshaling user data")
 	}
 	switch v := item.(type) {
 	case int:
@@ -88,7 +89,7 @@ func (user *User) Insert() error {
 
 	id := uuid.NewV4()
 	color := newPastelColor()
-	createdAt := currentTime() 
+	createdAt := currentTime()
 
 	stmt.Exec(id, user.Email, user.Password, user.Nickname, user.FirstName, user.LastName, user.Gender, user.Age, color, createdAt)
 	return nil
@@ -108,7 +109,7 @@ func (u *User) IsValid() (bool, error) {
 	// Email
 	exists, _, err := GetUser("Email", u.Email)
 	if err != nil {
-		return false, err 
+		return false, err
 	}
 	if exists {
 		errs.Add("Email", "Email already in use")
