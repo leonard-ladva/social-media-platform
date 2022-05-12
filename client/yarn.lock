@@ -5878,6 +5878,11 @@ vue-hot-reload-api@^2.3.0:
   resolved "https://registry.npmjs.org/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz"
   integrity sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==
 
+vue-input-autowidth@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/vue-input-autowidth/-/vue-input-autowidth-2.2.0.tgz#d3c42f17b3199e234cc575f5a80b40d1f970c514"
+  integrity sha512-yRngEzIdQb0GxY6+JNIvhDXX9RAuXlq+DwILZMUlK1SO/mGKKYd7Nq42AuUOZC/ZGkMHR400N8FbHVaWFNoYvw==
+
 vue-loader@^17.0.0:
   version "17.0.0"
   resolved "https://registry.npmjs.org/vue-loader/-/vue-loader-17.0.0.tgz"

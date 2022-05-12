@@ -1,6 +1,6 @@
 <template>
   <div id="primaryPageWrapper">
-	<button v-on:click="sendMessage('hello')">Say Gekki!</button>
+	<!-- <button v-on:click="sendMessage('hello')">Say Gekki!</button> -->
     <router-view/>
   </div>
 </template>
@@ -49,5 +49,6 @@ export default {
 <style scoped>
 #primaryPageWrapper {
   height: 100%;
+  margin: 0 2rem;
 }
 </style>

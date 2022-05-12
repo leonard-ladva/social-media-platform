@@ -4,7 +4,7 @@
 		<input class="form-control"
 		:type="type"
 		:v-model="something"
-		:@blur="blurValue"
+		@blur="blurValue"
 		placeholder="{{ label }}"/>
 		<p
 			:v-for="errorLoop"

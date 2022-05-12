@@ -1,49 +1,24 @@
 <template>
 	<form @submit.prevent="submitPost" id="postForm">
-		<div class="form-group">
+		<div class="form-group" id="top">
+			<input class="tag" type="text" v-model="tag" v-autowidth="{comfortZone: '0.3rem', minWidth: '4rem'}" aria-disabled="true"/>
+		</div>
+		<div class="form-group" id="middle">
 			<textarea
+				id="content"
 				type="text"
 				v-model="content"
 				class="form-control"
-				placeholder="What's on your mind?"
+				placeholder="What's in your noggin?"
 
 				@blur="v$.content.$touch()"
 				@focus="v$.content.$reset()"
 			/>
-			<p
-				v-for="error of v$.content.$errors"
-				:key="error.$uid"
-			>
-				<strong>{{ error.$message }}</strong>
-			</p>
+			<hr>
 		</div>
-
-		<label for="validationTags">Choose a Tag</label>
-		<select 
-			class="form-select"
-			id="tags" 
-			name="tags" 
-			v-model="tag" 
-			data-allow-new="true"
-			data-allow-clear="Hello"
-
-			@blur="v$.tag.$touch()"
-			@focus="v$.tag.$reset()"
-			>
-			<option disabled hidden value="">Choose a tag...</option>
-            <option value="Just chilling" selected="selected" >Just chilling</option>
-			<option v-for="tag of tags" :key="tag.ID" :value="tag.Title">{{ tag.Title }}</option>
-        </select>
-		<p 
-			v-for="error of v$.tag.$errors"
-			:key="error.$uid"
-			>
-			<strong>{{ error.$message }}</strong>		
-		</p>
-        <div class="invalid-feedback">Please select a valid tag.</div>
-
-		<input type="submit" value="Submit">
-			
+		<div class="form-group" id="bottom">
+			<input type="submit" value="Post">
+		</div>
 	</form>
 </template>
 
@@ -52,11 +27,14 @@ import useVuelidate from '@vuelidate/core'
 import { required, maxLength, helpers } from '@vuelidate/validators'
 import axios from '../plugins/axios'
 import { mapGetters } from 'vuex'
+import { directive as VueInputAutowidth } from "vue-input-autowidth"
+
 
 const printableChars = helpers.regex(/[ -~]/)
 
 export default {
 	name: 'MakePost',
+	directives: { autowidth: VueInputAutowidth },
 	setup: () => ({ v$: useVuelidate() }),
 	data() {
 		return {
@@ -76,7 +54,6 @@ export default {
 			const isFormCorrect = await this.v$.$validate()
 			if (!isFormCorrect) return
 			
-			// this.post.userId = this.$store.state.user.Id
 			const data = {
 				tag: this.tag,
 				content: this.content,
@@ -89,16 +66,41 @@ export default {
 	computed: {
 		...mapGetters(['tags'])
 	},
-	async created() {
-		const response = await axios.get('tags')
-		this.$store.dispatch('tags', response.data)
-	}
 }
 </script>
 
 <style>
 	#postForm {
-		border: 0.1rem solid rgba(220, 220, 220, 1);
+		border: 0.1rem solid rgb(239, 243, 244);
 		border-top: none;
+		padding: 1rem 1.5rem;
+	}
+
+	#top, #bottom {
+		text-align: right;		
+	}
+	textarea#content {
+		border: none;
+		resize: none;
+		font-size: 1.5rem;
+	}
+	textarea#content:focus, input.tag:focus {
+		outline: none;
+		box-shadow: none;
+	}
+
+	input.tag {
+		font-family: Chirp Heavy;
+		border: none;
+		display: inline-block;
+		padding: .35em .65em;
+		font-size: .75em;
+		font-weight: 700;
+		line-height: 1;
+		color: #fff;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: baseline;
+		border-radius: .25rem;
 	}
 </style>
