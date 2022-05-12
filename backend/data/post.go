@@ -14,32 +14,29 @@ var postAllowedChars = map[string]string{
 }
 
 func (post *Post) Insert() error {
-	stmt, err := DB.Prepare("INSERT INTO Post (ID, UserID, Content, TagID, CreatedAt) VALUES (?, ?, ?, ?, ?);")
+	stmt, err := DB.Prepare("INSERT INTO Post (ID, UserID, Content, TagID, CreatedAt) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		return errors.New("data: inserting post")
 	}
 	defer stmt.Close()
 
-	fmt.Println("here")
-
 	tag, err := getTagByTitle(post.Tag)
-	if err == sql.ErrNoRows {
-		tag := &Tag{}
+	if err != nil && err != sql.ErrNoRows {
+		return errors.New("data: getting post TagID")
+	}
+	if err != nil {
+		tag = &Tag{}
 		tag.Title = post.Tag
 		tag, err = tag.Insert()
 		if err != nil {
 			return err
 		}
-		err = nil
-		post.TagID = tag.ID
 	}
-	if err != nil {
-		return errors.New("data: getting post TagID")
-	}
+	post.TagID = tag.ID
 	id := uuid.NewV4()
 	createdAt := currentTime()
 
-	stmt.Exec(id, post.UserID, post.Content, tag.ID, createdAt)
+	stmt.Exec(id, post.UserID, post.Content, post.TagID, createdAt)
 	return nil
 }
 

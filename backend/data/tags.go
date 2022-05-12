@@ -14,7 +14,7 @@ func getTagByTitle(title string) (*Tag, error) {
 	row := DB.QueryRow(query, title)
 	err := row.Scan(&tag.ID, &tag.Title, &tag.CreatedAt)
 	if err != nil {
-		return nil, errors.New("data: getting tag") 
+		return nil, err 
 	}
 	return tag, nil
 }
