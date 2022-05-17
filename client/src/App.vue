@@ -1,6 +1,6 @@
 <template>
   <div id="primaryPageWrapper">
-	<!-- <button v-on:click="sendMessage('hello')">Say Gekki!</button> -->
+	<button v-on:click="sendMessage('hello')">Say Gekki!</button>
     <router-view/>
   </div>
 </template>
@@ -8,39 +8,31 @@
 <script>
 // import NavBar from './components/Nav.vue'
 import axios from './plugins/axios'
+import { ws } from './assets/js/websocket.js'
+
 
 export default {
 	name: 'App',
-	data() {
-		return {
-			connection: null
-		}
-	},
+	// data() {
+	// 	return {
+	// 		// connection: null
+	// 	}
+	// },
 	async created () {
-		const response = await axios.get('user')
-		if (response.status === 200) {
-			this.webSocket()	
+		if (localStorage.getItem('token')) {
+			await this.getCurrentUser()	
+			ws.connect(this.$store.state.user)
 		}
-
-		this.$store.dispatch('user', response.data.User)
 	},
 	methods: {
-		webSocket() {
-			console.log("Starting connection to WebSocket Server")
-			this.connection = new WebSocket("ws://localhost:9100/ws")
-
-			this.connection.onmessage = function(event) {
-				console.log(event);
+		async getCurrentUser() {
+			try {
+				const response = await axios.get('user')
+				this.$store.dispatch('user', response.data.User)
+			} catch (err) {
+				console.log("User not logged in")
+				this.$store.dispatch('user', null)
 			}
-
-			this.connection.onopen = function(event) {
-				console.log(event)
-				console.log("Successfully connected to the websocket")
-			}
-		},
-		sendMessage(message) {
-			console.log(this.connection)
-			this.connection.send(message)
 		}
 	}
 }

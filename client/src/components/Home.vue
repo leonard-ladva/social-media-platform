@@ -24,6 +24,11 @@
 		components: {
 			SideBar,
 		},
+		// created() {
+		// 	if (!localStorage.getItem('token')) {
+		// 		this.$router.push({name: 'login'})
+		// 	}
+		// }
 	}
 </script>
 

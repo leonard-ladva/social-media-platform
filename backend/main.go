@@ -8,7 +8,8 @@ import (
 	"git.01.kood.tech/Rostislav/real-time-forum/handlers"
 	mid "git.01.kood.tech/Rostislav/real-time-forum/middleware"
 )
-var CurrentUser struct{}
+
+var port string
 
 func setupRoutes() {
 	// Authentication
@@ -24,6 +25,10 @@ func setupRoutes() {
 	// Chats
 	http.HandleFunc("/users", mid.EnableCors(mid.Authenticate(handlers.GetAllUsers)))
 	http.HandleFunc("/ws", handlers.WebSocket)
+	// http.HandleFunc("/ws", mid.ClientMW(handlers.Test))
+
+	// http.HandleFunc("/")
+
 }
 
 func main() {

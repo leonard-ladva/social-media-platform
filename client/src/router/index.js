@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginForm from '../components/Login.vue'
-import RegisterForm from '../components/Register.vue'
 import HomeView from '../components/Home.vue'
 import ChatsView from '../components/ChatsView.vue'
 import PostsView from '../components/PostsView.vue'
@@ -14,16 +12,16 @@ const routes = [
 	{
 		path: '/',
 		name: 'home',
-		redirect: '/feed',
+		redirect: {name: 'feed'},
 		component: HomeView,
 		children: [
 			{
-				path: '/feed',
+				path: 'feed',
 				name: 'feed',
 				component: PostsView,
 			},
 			{
-				path: '/chat/:id',
+				path: 'chat/:id',
 				name: 'chat', 
 				component: ChatsView,
 			}
@@ -32,13 +30,13 @@ const routes = [
 	{
 		path: '/login',
 		name: 'login',
-		component: LoginForm,
+		component: ()=> import('../components/Login.vue'),
 	
 	},
 	{
 		path: '/register',
 		name: 'register',
-		component: RegisterForm,
+		component: ()=> import('../components/Register.vue'),
 	}
 ]
 

@@ -5,10 +5,35 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
 	"github.com/gorilla/websocket"
 )
+
+var GC = globalClients{data: make(map[ClientID]*Client), RWMutex: &sync.RWMutex{}}
+
+type globalClients struct {
+	data map[ClientID]*Client
+	*sync.RWMutex
+}
+
+type Client struct {
+	Conn *websocket.Conn
+	// Name string
+	Id ClientID
+}
+
+type ClientID string
+
+type ClientList struct {
+	Name string  `json:"client_name"`
+	ID   ClientID `json:"client_id"`
+}
+type wsMsg struct {
+	Type string    `json:"type"`
+	User data.User `json:"user"`
+}
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := data.GetAllUsers()
@@ -28,6 +53,19 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
+func (gc *globalClients) Add(cl *Client) {
+
+	gc.Lock()
+	defer gc.Unlock()
+	gc.data[cl.Id] = cl
+}
+
+func (gc *globalClients) Del(cid ClientID) {
+
+	gc.Lock()
+	defer gc.Unlock()
+	delete(gc.data, cid)
+}
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -47,18 +85,50 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 
 func wsReader(conn *websocket.Conn) {
 	for {
-		messageType, p, err := conn.ReadMessage()
+		messageType, body, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			return
 		}
+		var msgBody wsMsg
+		json.Unmarshal(body, &msgBody)
+		if msgBody.Type == "auth" {
+			authenticate(conn, msgBody.User)
+		}
+		// fmt.Println(string(body))
 
-		fmt.Println(string(p))
-
-		if err := conn.WriteMessage(messageType, p); err != nil {
+		if err := conn.WriteMessage(messageType, body); err != nil {
 			log.Println(err)
 			return
 		}
 
 	}
+}
+
+func authenticate(conn *websocket.Conn, user data.User) {
+	fmt.Println(user)
+
+	client := new(Client) 
+	client.Id = ClientID(user.ID)
+	client.Conn = conn
+
+	GC.Add(client)
+	// defer GC.Del(client.Id)
+
+	fmt.Println(GC.list())
+
+}
+
+func (gc *globalClients) list() []ClientList {
+
+	gc.RLock()
+	defer gc.RUnlock()
+
+	out := []ClientList{}
+
+	for _, cl := range gc.data {
+		out = append(out, ClientList{ID: cl.Id})
+	}
+
+	return out
 }
