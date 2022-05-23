@@ -2,21 +2,28 @@
 	<div id="sidebar">
 		<div id="currentUser" v-if="$store.state.user">
 			<p class="title">Logged in user</p>
-			<UserCard :user="currentUser" />
+			<UserCard :user="currentUser" :active="true" />
 			<a class="logout" href="javascript:void(0)" @click="logout">Log out</a>
 		</div>
 
-		<div id="activeUsers" v-if="$store.state.allUsers">
+
+		<div id="activeUsers" v-if="$store.state.activeUsers">
 			<h3>Active Users</h3>
 			<UserCard
-			v-for="user of $store.state.allUsers.values()" 
+			v-for="user of $store.state.activeUsers.values()" 
+			:user="user"
+			:key="user.id" 
+			:active ="true" />
+		</div>
+
+		<div id="offlineUsers" v-if="$store.state.offlineUsers">
+			<h3>Offline Users</h3>
+			<UserCard
+			v-for="user of $store.state.offlineUsers.values()" 
 			:user="user"
 			:key="user.id" />
 		</div>
 
-		<div id="unactiveUsers">
-			<h3>Offline Users</h3>
-		</div>
 	</div>	
 </template>
 
@@ -27,22 +34,33 @@ import UserCard from './UserCard.vue'
 
 export default {
 	name: 'SideBar',
-	data() {
-		return {
-			inactiveUsers: '',
-		}
-	},
 	methods: {
 		logout() {
 			this.$router.push({name: 'login'})
 			localStorage.removeItem('token')
+		},
+		sortUsersStatus(allUsers) {
+			let activeUsers = new Map()	
+			let offlineUsers = new Map()
+
+			for (let user of allUsers.values()) {
+				if (user.id == this.$store.state.user.id) continue
+				if (user.active == true) {
+					activeUsers.set(user.id, user)
+					continue	
+				}
+				offlineUsers.set(user.id, user)
+			}
+
+			this.$store.dispatch('activeUsers', activeUsers)
+			this.$store.dispatch('offlineUsers', offlineUsers)
 		}
 	},
 	computed: {
 		...mapGetters(['user', 'allUsers']),
 		currentUser() {
 			return this.$store.state.user
-		}
+		},
 	},
 	async created() {
 		let response = await axios.get('/users')
@@ -52,22 +70,25 @@ export default {
 			users.set(user.id, user)
 		}
 		this.$store.dispatch('allUsers', users)
+		
+		this.sortUsersStatus(users)
+
 	},
 	components: {
 		UserCard,
-	}
+	},
 }
 </script>
 
 <style>
 	#sidebar {
 		width: 30%;
-		border-color: rgb(247, 249, 249);
-		border-radius: 20px;
+		/* border-color: rgb(247, 249, 249); */
+		/* border-radius: 20px; */
 	}
 
-	#activeUsers .userCard {
-		margin: 10px 0;
+	#activeUsers .userCard, #offlineUsers .userCard {
+		margin: 0.7rem 0;
 	}
 	#currentUser .title {
 		font-family: Chirp Bold;
@@ -75,5 +96,8 @@ export default {
 	}
 	#currentUser .logout {
 		font-size: 0.8rem;
+	}
+	#activeUsers, #offlineUsers {
+		margin-top: 2.3rem;
 	}
 </style>

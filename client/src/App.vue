@@ -1,6 +1,5 @@
 <template>
   <div id="primaryPageWrapper">
-	<button v-on:click="sendMessage('hello')">Say Gekki!</button>
     <router-view/>
   </div>
 </template>
@@ -13,11 +12,6 @@ import { ws } from './assets/js/websocket.js'
 
 export default {
 	name: 'App',
-	// data() {
-	// 	return {
-	// 		// connection: null
-	// 	}
-	// },
 	async created () {
 		if (localStorage.getItem('token')) {
 			await this.getCurrentUser()	
@@ -41,6 +35,6 @@ export default {
 <style scoped>
 #primaryPageWrapper {
   height: 100%;
-  margin: 0 2rem;
+  margin: 1rem 2rem;
 }
 </style>

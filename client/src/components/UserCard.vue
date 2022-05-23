@@ -3,6 +3,7 @@
 		<div class="userCard">
 			<span class="profilePicture" :style="profilePic" ></span>
 			<span class="nickname">{{ user.nickname }}</span>
+			<span v-if="active" class="activeDot"></span>
 		</div>
 	</router-link>
 </template>
@@ -12,6 +13,7 @@
 		name: "UserCard",
 		props: {
 			user: Object,
+			active: Boolean,
 		},
 		computed: {
 			profilePic() {
@@ -49,5 +51,11 @@
 	.chatLink {
 		text-decoration: none;
 	}
-
+	.activeDot {
+		background-color: #5ad032;
+		border-radius: 50%;
+		height: 13px;
+		width: 13px;
+		margin-right: 20px;
+	}
 </style>

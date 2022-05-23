@@ -27,12 +27,14 @@ type Client struct {
 type ClientID string
 
 type ClientList struct {
-	Name string  `json:"client_name"`
+	Name string   `json:"client_name"`
 	ID   ClientID `json:"client_id"`
 }
 type wsMsg struct {
-	Type string    `json:"type"`
-	User data.User `json:"user"`
+	Type    string    `json:"type"`
+	User    data.User `json:"user"`
+	Message string    `json:"message"`
+	To      string    `json:"to"`
 }
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +43,13 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
+	}
+	// If a user exists in the WebSocket Global Clients map then mark as active
+	for _, user := range users {
+		_, ok := GC.data[ClientID(user.ID)]
+		if ok {
+			user.Active = true
+		}
 	}
 
 	data, err := json.Marshal(users)
@@ -54,18 +63,17 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (gc *globalClients) Add(cl *Client) {
-
 	gc.Lock()
 	defer gc.Unlock()
 	gc.data[cl.Id] = cl
 }
 
 func (gc *globalClients) Del(cid ClientID) {
-
 	gc.Lock()
 	defer gc.Unlock()
 	delete(gc.data, cid)
 }
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -92,10 +100,15 @@ func wsReader(conn *websocket.Conn) {
 		}
 		var msgBody wsMsg
 		json.Unmarshal(body, &msgBody)
-		if msgBody.Type == "auth" {
+
+		switch msgBody.Type {
+		case "auth":
 			authenticate(conn, msgBody.User)
+			break
+		case "message":
+			handleMessage(conn, msgBody, messageType)
 		}
-		// fmt.Println(string(body))
+		fmt.Println(string(body))
 
 		if err := conn.WriteMessage(messageType, body); err != nil {
 			log.Println(err)
@@ -108,7 +121,7 @@ func wsReader(conn *websocket.Conn) {
 func authenticate(conn *websocket.Conn, user data.User) {
 	fmt.Println(user)
 
-	client := new(Client) 
+	client := new(Client)
 	client.Id = ClientID(user.ID)
 	client.Conn = conn
 
@@ -117,6 +130,17 @@ func authenticate(conn *websocket.Conn, user data.User) {
 
 	fmt.Println(GC.list())
 
+}
+
+func handleMessage(conn *websocket.Conn, msgBody wsMsg, messageType int) {
+	_, online := GC.data[ClientID(msgBody.To)]
+	if online {
+		err := GC.data[ClientID(msgBody.To)].Conn.WriteMessage(messageType, []byte(msgBody.Message))
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}
 }
 
 func (gc *globalClients) list() []ClientList {

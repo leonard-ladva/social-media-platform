@@ -2,9 +2,11 @@ export { ws }
 
 const wsAddress = "ws://localhost:9100/ws"
 
-function WsMsg(params) {
-	this.type = params.type
-	this.user = params.user
+class WsMsg {
+	constructor(params) {
+		this.type = params.type
+		this.user = params.user
+	}
 }
 
 const ws = {
@@ -28,6 +30,6 @@ const ws = {
 		}
 	},
 	sendMessage: function(message) {
-		this.connection.send(message)	
+		this.connection.send(JSON.stringify(message))	
 	}
 }

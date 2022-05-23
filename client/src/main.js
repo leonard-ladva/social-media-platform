@@ -10,6 +10,8 @@ const store = createStore({
 			user: null,
 			tags: null,
 			allUsers: null,
+			activeUsers: null,
+			offlineUsers: null,
 		}
 	},
 	getters: {
@@ -21,7 +23,13 @@ const store = createStore({
 		},
 		allUsers: (state) => {
 			return state.allUsers
-		}
+		},
+		activeUsers: (state) => {
+			return state.activeUsers
+		},
+		offlineUsers: (state) => {
+			return state.offlineUsers
+		},
 	},
 	actions: {
 		user(context, user) {
@@ -32,7 +40,13 @@ const store = createStore({
 		},
 		allUsers(context, allUsers) {
 			context.commit('allUsers', allUsers)
-		}
+		},
+		activeUsers(context, activeUsers) {
+			context.commit('activeUsers', activeUsers)
+		},
+		offlineUsers(context, offlineUsers) {
+			context.commit('offlineUsers', offlineUsers)
+		},
 	},
 	mutations: {
 		user(state, user) {
@@ -43,6 +57,12 @@ const store = createStore({
 		},
 		allUsers(state, allUsers) {
 			state.allUsers = allUsers
+		},
+		activeUsers(state, activeUsers) {
+			state.activeUsers = activeUsers
+		},
+		offlineUsers(state, offlineUsers) {
+			state.offlineUsers = offlineUsers
 		},
 	},
 })

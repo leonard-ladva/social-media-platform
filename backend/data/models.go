@@ -63,4 +63,5 @@ type User struct {
 	Age             StringInt `json:"age"`
 	Color           string    `json:"color"`
 	CreatedAt       int64     `json:"createdAt"`
+	Active			bool      `json:"active"`
 }
