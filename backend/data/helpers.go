@@ -2,6 +2,6 @@ package data
 
 import "time"
 
-func currentTime() int64 {
+func CurrentTime() int64 {
 	return time.Now().UnixMilli()
 }

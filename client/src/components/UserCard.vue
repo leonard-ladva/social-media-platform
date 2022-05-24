@@ -36,7 +36,7 @@
 		margin: 5px;
 	}
 	.userCard .nickname {
-		width: calc(100% - 80px);
+		width: calc(100% - 90px);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -56,6 +56,5 @@
 		border-radius: 50%;
 		height: 13px;
 		width: 13px;
-		margin-right: 20px;
 	}
 </style>

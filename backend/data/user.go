@@ -15,6 +15,7 @@ import (
 
 	uuid "github.com/satori/go.uuid"
 )
+
 var CurrentUser *User
 
 // lengthReq specifies the min-max lenghts of user data fields
@@ -89,7 +90,7 @@ func (user *User) Insert() error {
 
 	id := uuid.NewV4()
 	color := newPastelColor()
-	createdAt := currentTime()
+	createdAt := CurrentTime()
 
 	stmt.Exec(id, user.Email, user.Password, user.Nickname, user.FirstName, user.LastName, user.Gender, user.Age, color, createdAt)
 	return nil

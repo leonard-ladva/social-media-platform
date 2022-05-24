@@ -1,4 +1,3 @@
-/* Table 'Tag' */
 CREATE TABLE "Tag"(
   "ID" TEXT NOT NULL,
   "Title" TEXT NOT NULL,
@@ -7,7 +6,6 @@ CREATE TABLE "Tag"(
   UNIQUE("Title")
 );
 
-/* Table 'Comment' */
 CREATE TABLE "Comment"(
   "ID" TEXT NOT NULL,
   "UserID" TEXT NOT NULL,
@@ -21,7 +19,6 @@ CREATE TABLE "Comment"(
   CONSTRAINT users_comments FOREIGN KEY ("UserID") REFERENCES "User" ("ID")
 );
 
-/* Table 'Post' */
 CREATE TABLE "Post"(
   "ID" TEXT NOT NULL,
   "UserID" TEXT NOT NULL,
@@ -35,7 +32,6 @@ CREATE TABLE "Post"(
   CONSTRAINT "Category_Post" FOREIGN KEY ("TagID") REFERENCES "Tag" ("ID")
 );
 
-/* Table 'User' */
 CREATE TABLE "User"(
   "ID" TEXT NOT NULL,
   "Email" TEXT NOT NULL,
@@ -51,19 +47,17 @@ CREATE TABLE "User"(
   UNIQUE("Email")
 );
 
-/* Table 'Chat' */
 CREATE TABLE "Chat"(
   "ID" TEXT NOT NULL,
-  "MessageCount" INTEGER NOT NULL,
   "LastMessageTime" INTEGER NOT NULL,
+  "CreatedAt" INTEGER NOT NULL,
   PRIMARY KEY("ID")
 );
 
-/* Table 'Message' */
 CREATE TABLE "Message"(
+  "ID" TEXT NOT NULL,
   "ChatID" TEXT NOT NULL,
   "UserID" TEXT NOT NULL,
-  "Index" INTEGER NOT NULL,
   "Content" TEXT NOT NULL,
   "CreatedAt" INTEGER NOT NULL,
   PRIMARY KEY("ChatID"),
@@ -71,7 +65,6 @@ CREATE TABLE "Message"(
   CONSTRAINT "chatTotals_messages" FOREIGN KEY ("ChatID") REFERENCES "Chat" ("ID")
 );
 
-/* Table 'Session' */
 CREATE TABLE "Session"(
   "ID" TEXT NOT NULL,
   "UserID" TEXT NOT NULL,

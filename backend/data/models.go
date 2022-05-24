@@ -9,14 +9,15 @@ type DBModel struct {
 }
 
 type Tag struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
-	CreatedAt int64 `json:"createdAt"`
+	ID        string `json:"id"`
+	Title     string `json:"title"`
+	CreatedAt int64  `json:"createdAt"`
 }
 
 type Chat struct {
-	ID           string
-	MessageCount int
+	ID              string
+	LastMessageTime int64
+	CreatedAt       int64
 }
 
 type Comment struct {
@@ -28,9 +29,9 @@ type Comment struct {
 }
 
 type Message struct {
+	ID        string
 	ChatID    string
 	UserID    string
-	MessageNr int
 	Content   string
 	CreatedAt int64
 }
@@ -63,5 +64,5 @@ type User struct {
 	Age             StringInt `json:"age"`
 	Color           string    `json:"color"`
 	CreatedAt       int64     `json:"createdAt"`
-	Active			bool      `json:"active"`
+	Active          bool      `json:"active"`
 }

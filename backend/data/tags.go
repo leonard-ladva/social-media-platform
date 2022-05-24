@@ -14,10 +14,11 @@ func getTagByTitle(title string) (*Tag, error) {
 	row := DB.QueryRow(query, title)
 	err := row.Scan(&tag.ID, &tag.Title, &tag.CreatedAt)
 	if err != nil {
-		return nil, err 
+		return nil, err
 	}
 	return tag, nil
 }
+
 // GetTagByID gets a tag from the database given an ID
 func GetTagByID(ID string) (*Tag, error) {
 	tag := &Tag{}
@@ -39,7 +40,7 @@ func (tag *Tag) Insert() (*Tag, error) {
 	defer stmt.Close()
 
 	tag.ID = uuid.NewV4().String()
-	tag.CreatedAt = currentTime()
+	tag.CreatedAt = CurrentTime()
 
 	stmt.Exec(tag.ID, tag.Title, tag.CreatedAt)
 	return tag, nil

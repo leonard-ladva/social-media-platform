@@ -34,7 +34,7 @@ func (post *Post) Insert() error {
 	}
 	post.TagID = tag.ID
 	id := uuid.NewV4()
-	createdAt := currentTime()
+	createdAt := CurrentTime()
 
 	stmt.Exec(id, post.UserID, post.Content, post.TagID, createdAt)
 	return nil

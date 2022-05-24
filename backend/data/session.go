@@ -17,7 +17,7 @@ func (user User) AddSession() (uuid.UUID, error) {
 		return token, errors.New("data: inserting session")
 	}
 
-	statement.Exec(token, user.ID, currentTime())
+	statement.Exec(token, user.ID, CurrentTime())
 	return token, nil
 }
 
