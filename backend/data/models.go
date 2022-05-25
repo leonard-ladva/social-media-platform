@@ -29,11 +29,11 @@ type Comment struct {
 }
 
 type Message struct {
-	ID        string
-	ChatID    string
-	UserID    string
-	Content   string
-	CreatedAt int64
+	ID        string `json:"id"`
+	ChatID    string `json:"chatId"`
+	UserID    string `json:"userId"`
+	Content   string `json:"content"`
+	CreatedAt int64 `json:"createdAt"`
 }
 
 type Post struct {

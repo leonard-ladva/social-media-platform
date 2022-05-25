@@ -1,5 +1,5 @@
 <template>
-	<router-link :to="{name: 'chat', params:{id: user.id}}" class="chatLink"> 
+	<router-link :to="{name: 'chat', params:{receiverId: user.id}}" class="chatLink"> 
 		<div class="userCard">
 			<span class="profilePicture" :style="profilePic" ></span>
 			<span class="nickname">{{ user.nickname }}</span>

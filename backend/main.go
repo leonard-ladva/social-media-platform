@@ -26,7 +26,8 @@ func setupRoutes() {
 	// Chats
 	http.HandleFunc("/users", mid.EnableCors(mid.Authenticate(chat.GetAllUsers)))
 	http.HandleFunc("/ws", chat.WebSocket)
-	// http.HandleFunc("/ws", mid.ClientMW(handlers.Test))
+
+	http.HandleFunc("/latestMessages", mid.EnableCors(mid.Authenticate(handlers.LatestMessages)))
 
 }
 

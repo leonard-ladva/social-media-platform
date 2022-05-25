@@ -6,8 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (message *Message) Insert() error {
-
+func (message Message) Insert() error {
 	stmt, err := DB.Prepare("INSERT INTO Message (ID, ChatID, UserID, Content, CreatedAt) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		return errors.New("db: inserting message")
@@ -20,14 +19,21 @@ func (message *Message) Insert() error {
 	return nil
 }
 
-// func (chat *Chat) GetLatest() (*Chat, error) {
-// 	query := "SELECT (ID, LastMessageTime, CreatedAt) FROM Chat WHERE ChatID = ?"
-// 	row := DB.QueryRow(query, chat.ID)
+func GetLatestMessages(lastEarliestMessage string, chatID string) (messages []*Message, err error) {
+	query := "SELECT ID, ChatID, UserID, Content, CreatedAt FROM Message WHERE ChatID = ? AND CreatedAt < ? ORDER BY CreatedAt DESC LIMIT 10"
+	rows, err := DB.Query(query, chatID, lastEarliestMessage)
+	if err != nil {
+		return nil, err
+	}
 
-// 	err := row.Scan(&chat.ID, &chat.LastMessageTime, &chat.CreatedAt)
-// 	if err != nil {
-// 		return chat, err
-// 	}
+	for rows.Next() {
+		message := &Message{}
+		err := rows.Scan(&message.ID, &message.ChatID, &message.UserID, &message.Content, &message.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		messages = append(messages, message)
+	}
 
-// 	return chat, nil
-// }
+	return messages, nil
+}

@@ -21,7 +21,7 @@ const routes = [
 				component: PostsView,
 			},
 			{
-				path: 'chat/:id',
+				path: 'chat/:receiverId',
 				name: 'chat', 
 				component: ChatsView,
 			}

@@ -60,7 +60,7 @@ CREATE TABLE "Message"(
   "UserID" TEXT NOT NULL,
   "Content" TEXT NOT NULL,
   "CreatedAt" INTEGER NOT NULL,
-  PRIMARY KEY("ChatID"),
+  PRIMARY KEY("ID"),
   CONSTRAINT users_messages FOREIGN KEY ("UserID") REFERENCES "User" ("ID"),
   CONSTRAINT "chatTotals_messages" FOREIGN KEY ("ChatID") REFERENCES "Chat" ("ID")
 );

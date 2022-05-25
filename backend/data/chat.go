@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func (chat *Chat) Insert() error {
+func (chat Chat) Insert() error {
 
 	stmt, err := DB.Prepare("INSERT INTO Chat (ID, LastMessageTime, CreatedAt) VALUES (?, ?, ?)")
 	if err != nil {
@@ -19,8 +19,8 @@ func (chat *Chat) Insert() error {
 	return nil
 }
 
-func (chat *Chat) Update() error {
-	stmt, err := DB.Prepare("UPDATE Chat SET LastMessageTime = ? WHERE ID = ?")
+func (chat Chat) Update() error {
+	stmt, err := DB.Prepare(`UPDATE Chat SET LastMessageTime = ? WHERE ID = "?"`)
 	if err != nil {
 		return errors.New("data: updating chat")
 	}
@@ -30,7 +30,7 @@ func (chat *Chat) Update() error {
 	return nil
 }
 
-func (chat *Chat) Get() (*Chat, error) {
+func (chat Chat) Get() (Chat, error) {
 	query := "SELECT ID, LastMessageTime, CreatedAt FROM Chat WHERE ID = ?"
 	row := DB.QueryRow(query, chat.ID)
 
@@ -42,7 +42,7 @@ func (chat *Chat) Get() (*Chat, error) {
 	return chat, nil
 }
 
-func (chat *Chat) Exists() (bool, error) {
+func (chat Chat) Exists() (bool, error) {
 	chat, err := chat.Get()
 	if err == sql.ErrNoRows {
 		return false, nil
