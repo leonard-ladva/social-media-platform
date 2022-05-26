@@ -83,15 +83,13 @@ export default {
 <style>
 	#sidebar {
 		width: 30%;
-		/* border-color: rgb(247, 249, 249); */
-		/* border-radius: 20px; */
 	}
 
 	#activeUsers .userCard, #offlineUsers .userCard {
 		margin: 0.7rem 0;
 	}
 	#currentUser .title {
-		font-family: Chirp Bold;
+		font-family: "Chirp Bold";
 		margin-bottom: 0px;
 	}
 	#currentUser .logout {

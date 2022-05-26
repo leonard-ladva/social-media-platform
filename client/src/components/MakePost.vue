@@ -11,13 +11,16 @@
 				class="form-control"
 				placeholder="What's in your noggin?"
 
+				@input="resizeTextArea()"
+				ref="content"
+
 				@blur="v$.content.$touch()"
 				@focus="v$.content.$reset()"
 			/>
 			<hr>
 		</div>
 		<div class="form-group" id="bottom">
-			<input type="submit" value="Post">
+			<input type="submit" value="Post" id="submit">
 		</div>
 	</form>
 </template>
@@ -62,6 +65,11 @@ export default {
 			const response = await axios.post('submitPost', data)
 			console.log(response)
 		},
+		resizeTextArea() {
+			const element = this.$refs.content
+			element.style.height = "auto"
+			element.style.height = (element.scrollHeight + "px")
+		}
 	},
 	computed: {
 		...mapGetters(['tags'])
@@ -71,7 +79,7 @@ export default {
 
 <style>
 	#postForm {
-		border: 0.1rem solid rgb(239, 243, 244);
+		border: 0.1rem solid var(--extraExtraLightGrey);
 		border-top: none;
 		padding: 1rem 1.5rem;
 	}
@@ -90,17 +98,28 @@ export default {
 	}
 
 	input.tag {
-		font-family: Chirp Heavy;
+		font-family: "Chirp Heavy";
 		border: none;
 		display: inline-block;
 		padding: .35em .65em;
 		font-size: .75em;
 		font-weight: 700;
 		line-height: 1;
-		color: #fff;
+		color: var(--white);
 		text-align: center;
 		white-space: nowrap;
 		vertical-align: baseline;
 		border-radius: .25rem;
 	}
+	#submit {
+		background-color: var(--blue);
+		border: none;
+		border-radius: 2rem;
+		padding: 0.4rem 0.7rem;
+		font-size: 1rem;
+		font-family: "Chirp Bold";
+		color: var(--white);
+		margin: 0 0.6rem 0 0.3rem;
+	}
+
 </style>

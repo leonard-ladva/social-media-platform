@@ -34,7 +34,7 @@ export default {
 
 <style scoped>
 #primaryPageWrapper {
-  height: 100%;
-  margin: 1rem 2rem;
+  height: 100vh;
+  padding: 2rem 2rem 0;
 }
 </style>

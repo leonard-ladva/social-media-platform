@@ -1,5 +1,4 @@
 <template>
-<div>
 	<MakePost />
 	<div id="posts">
 		<PostTemplate
@@ -15,7 +14,6 @@
 			You've reached the end
 		</h4>
 	</div>
-</div>
 </template>
 	
 <script>
@@ -56,14 +54,14 @@
 
 <style>
 	.post {
-		border: 0.1rem solid rgb(239, 243, 244);
+		border: 0.1rem solid var(--extraExtraLightGrey);
 	}
 
 	.post .nickname {
-		font-family: Chirp Bold;
+		font-family: "Chirp Bold";
 	}
 	.post:hover {
-		background-color: rgb(245 248 250);
+		background-color: var(--extraExtraLightGrey);
 	}
 	/* .post .header {
 		display: flex;
@@ -77,6 +75,6 @@
 		margin: 50px 0;
 	}
 	.tag {
-		background-color: #1DA1F2;
+		background-color: var(--blue);
 	}
 </style>

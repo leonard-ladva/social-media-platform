@@ -1,26 +1,35 @@
 <template>
-	<div>
-		<router-link :to="{name: 'home'}">Back Home</router-link>
-	</div>
-	<div v-if="$store.state.allUsers">
-		<h3>This is the start of your conversation with {{ otherUser.nickname }}</h3>
-	</div>
+		<div id="previousMessages">
+			<div v-if="$store.state.allUsers" id="conversationEnd">
+				<h3>This is the start of your conversation with {{ otherUser.nickname }}</h3>
+			</div>
 
-	<div>
-		<form @submit.prevent="handleSubmit">
-			<input v-model="message" type="text">
-			<input type="submit" value="send">
-		</form>
-	</div>
-	<div id="messagesFeed">
-		<ChatMessage
-			v-for="msg in messages"	
-			:key="msg.ID"
+			<TriggerIntersect v-if="$store.state.user != null" id="trigger" @triggerIntersected="getMessages" />
+			<ChatMessage
+				v-for="msg in messages"	
+				:key="msg.ID"
 
-			:message="msg"
-		/>
-	</div>
-	<TriggerIntersect v-if="$store.state.user != null" id="trigger" @triggerIntersected="getMessages" />
+				:message="msg"
+			/>
+		</div>
+
+		<div id="messageCreate" v-if="$store.state.allUsers">
+			<form @submit.prevent="handleSubmit" id="messageForm">
+				<textarea 
+					v-model="message" 
+					class="content" 
+					:placeholder="inputPlaceHolder"
+					@input="resizeTextArea()"	
+					ref="content"
+					resize="none"
+					rows="1"
+				></textarea>
+				<button id="send">
+					Send
+				</button>
+			</form>
+		</div>
+
 </template>
 
 <script>
@@ -58,18 +67,11 @@ export default {
 		},
 		currentTime() {
 			return (new Date).getTime()
+		},
+		inputPlaceHolder() {
+			return `Secret for ${this.otherUser.nickname}`
 		}
 	},
-	// async created() {
-	// 	if (this.$store.state.allUsers) { return }
-	// 	let response = await axios.get('/users')
-
-	// 	let users = new Map()
-	// 	for (let user of response.data) {
-	// 		users.set(user.id, user)
-	// 	}
-	// 	this.$store.dispatch('allUsers', users)
-	// },
 	methods: {
 		handleSubmit() {
 			let wsMsg = {
@@ -93,14 +95,64 @@ export default {
 				trigger.remove()
 			} 
 		},
+		resizeTextArea() {
+			const element = this.$refs.content
+			element.style.height = "auto"
+			element.style.height = (element.scrollHeight + "px")
+		}
 	}
 }
 </script>
 
 <style>
-#messagesFeed {
+#previousMessages {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
+
+#conversationEnd {
+	margin: 50px 0;
+}
+
+#messageCreate {
+	position: sticky;
+	bottom: 0;
+	height: auto;
+	background-color: var(--white);
+	padding: 1rem 0 1.5rem 0;
+}
+#messageForm {
+	display: flex;
+	align-items: flex-end;
+}
+#messageForm .content {
+	padding: 0.5rem 1.4rem;
+	width: 100%;
+	border-radius: 2rem;
+	background-color: var(--extraLightGrey);
+	border: none;
+	resize: none;
+}
+#messageForm .content:focus {
+	outline: none;
+	box-shadow: none;
+}
+#messagesFeed {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+#send {
+	background-color: var(--blue);
+	border: none;
+	border-radius: 2rem;
+	padding: 0.4rem 0.7rem;
+	font-size: 1.1rem;
+	font-family: "Chirp Bold";
+	color: var(--white);
+	margin: 0 0.6rem 0 0.3rem;
+}
+
 </style>

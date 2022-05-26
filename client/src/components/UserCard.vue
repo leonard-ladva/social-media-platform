@@ -24,7 +24,7 @@
 </script>:
 <style>
 	.userCard {
-		background-color: rgb(239, 243, 244);
+		background-color: var(--extraExtraLightGrey);
 		height: 55px;
 		border-radius: 30px;
 		display: flex;
@@ -42,11 +42,11 @@
 		white-space: nowrap;
 		font-size: 20px;
 		padding-bottom: 3px;
-		color: black;
+		color: var(--black);
 		text-decoration: none;
 	}
 	.userCard:hover {
-		background-color: #E1E8ED; 
+		background-color: var(--extraLightGrey); 
 	}
 	.chatLink {
 		text-decoration: none;

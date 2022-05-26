@@ -1,8 +1,7 @@
 <template>
 	<div class="message" :class="messageType">
-		<span>{{message.content}}</span>	
-		<!-- <span>{{message.userId}}</span>	
-		<span>{{message.createdAt}}</span>	 -->
+		<p class="content">{{message.content}}</p>	
+		<span class="time">{{messageTime}}</span>	
 	</div>	
 </template>
 
@@ -16,6 +15,14 @@ export default {
 	computed: {
 		messageType() {
 			return this.message.userId == this.$store.state.user.id ? "sentMessage" : "receivedMessage"
+		},
+		messageTime() {
+			let date = new Date(this.message.createdAt)
+			// let month = date.toLocaleString("default", {month: "short"})
+			let hours = date.getHours()
+			let minutes = date.getMinutes()
+
+			return `${hours}:${minutes}`
 		}
 	}
 }
@@ -24,20 +31,33 @@ export default {
 
 <style>
 .message {
-	/* background-color: lightblue; */
 	display: flex;
-	flex-direction: column;
-	margin: 0.2rem;
-	padding: 0.25rem 0.8rem;
+	margin: 0.3rem 0 0.1rem 0.5rem;
+	padding: 0.5rem 0.8rem;
 	width: fit-content;
-	border-radius: 1rem;
+	border-radius: 1.2rem;
+	max-width: 85%;
+	line-height: 1.2rem;
 }
 .sentMessage {
 	background-color: pink;
-	align-self: end;
+	align-self: flex-end;
 }
 .receivedMessage {
 	background-color: lightblue;
-	align-self: start;
+	align-self: flex-start;
+}
+.message .time {
+	font-size: 0.65rem;
+	color: var(--darkGrey);
+	font-family: "Chirp Regular";
+	margin-left: 0.45rem;
+	align-self: flex-end;
+	height: fit-content;
+}
+.message .content {
+	font-family: "Chirp Heavy";
+	margin-bottom: 0.25rem;
+	text-align: left;
 }
 </style>
