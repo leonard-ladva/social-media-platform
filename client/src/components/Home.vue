@@ -18,7 +18,7 @@
 				</div> -->
 			</div>
 
-			<router-view />
+			<router-view :key="$route.params.receiverId"/>
 		</div>
 		<SideBar/>
 	</div>
