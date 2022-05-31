@@ -13,10 +13,9 @@ import (
 )
 
 type WebsocketMessage struct {
-	Type    string    `json:"type"` // one of 'auth', 'message', 'userOffline', 'userOnline'
-	User    data.User `json:"user"`
-	Message string    `json:"message"`
-	To      string    `json:"to"`
+	Type    string       `json:"type"` // one of 'auth', 'message', 'offline', 'online'
+	UserID  string       `json:"userId"`
+	Message data.Message `json:"message"`
 }
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -44,9 +43,9 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-func authenticate(conn *websocket.Conn, user data.User) {
+func authenticate(conn *websocket.Conn, UserID string) {
 	client := new(Client)
-	client.Id = ClientID(user.ID)
+	client.Id = ClientID(UserID)
 	client.Conn = conn
 
 	GC.Add(client)
@@ -56,9 +55,16 @@ func authenticate(conn *websocket.Conn, user data.User) {
 }
 
 func handleMessage(conn *websocket.Conn, wsMsg WebsocketMessage, messageType int) error {
-	messageTime := data.CurrentTime()
+	message := wsMsg.Message
+	message.CreatedAt = data.CurrentTime()
 
-	valid, err := wsMsg.valid()
+	chatID, err := dataHelpers.ChatID(message.UserID, message.ReceiverID)
+	if err != nil {
+		return err
+	}
+	message.ChatID = chatID
+
+	valid, err := message.Valid()
 	if err != nil {
 		return err
 	}
@@ -66,16 +72,17 @@ func handleMessage(conn *websocket.Conn, wsMsg WebsocketMessage, messageType int
 		return errors.New("chat.handleMessage: websocket message not valid")
 	}
 
-	err = wsMsg.prepareChat(messageTime)
+	err = chatToDB(message)
 	if err != nil {
 		return err
 	}
 
-	err = wsMsg.prepareMessage(messageTime)
+	err = message.Insert()
 	if err != nil {
 		return err
 	}
 
+	wsMsg.Message = message
 	err = wsMsg.sendToClient(messageType)
 	if err != nil {
 		return err
@@ -83,45 +90,17 @@ func handleMessage(conn *websocket.Conn, wsMsg WebsocketMessage, messageType int
 	return nil
 }
 
-func (msg WebsocketMessage) valid() (bool, error) {
-	senderExsists, _, err := data.GetUser("ID", msg.User.ID)
-	if err != nil {
-		return false, err
-	}
-
-	receiverExsists, _, err := data.GetUser("ID", msg.To)
-	if err != nil {
-		return false, err
-	}
-
-	if !senderExsists || !receiverExsists || msg.Message == "" {
-		return false, nil
-	}
-	return true, nil
-}
-
-func (msg WebsocketMessage) prepareChat(msgTime int64) error {
+func chatToDB(msg data.Message) error {
 	var chat data.Chat
-	chatID, err := dataHelpers.ChatID(msg.User.ID, msg.To)
-	if err != nil {
-		return err
-	}
-	chat.ID = chatID
-	chat.LastMessageTime = msgTime
-	fmt.Println("before: ", chat)
+	chat.ID = msg.ChatID
+	chat.LastMessageTime = msg.CreatedAt
+
 	chatExists, err := chat.Exists()
 	if err != nil {
 		return err
 	}
-	fmt.Println("after:", chat)
 
 	if chatExists {
-		// chat, err := chat.Get()
-		// if err != nil {
-		// 	return err
-		// }
-		// chat.LastMessageTime = msgTime
-
 		err = chat.Update()
 		if err != nil {
 			return err
@@ -135,31 +114,24 @@ func (msg WebsocketMessage) prepareChat(msgTime int64) error {
 	return nil
 }
 
-func (msg WebsocketMessage) prepareMessage(msgTime int64) error {
-	var message data.Message
-	chatID, err := dataHelpers.ChatID(msg.User.ID, msg.To)
+func (wsMsg WebsocketMessage) sendToClient(messageType int) error {
+	jsonMsg, err := json.Marshal(wsMsg)
 	if err != nil {
 		return err
 	}
-	message.ChatID = chatID
-	message.UserID = msg.User.ID
-	message.Content = msg.Message
-	message.CreatedAt = msgTime
 
-	err = message.Insert()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (msg WebsocketMessage) sendToClient(messageType int) error {
-	_, online := GC.data[ClientID(msg.To)]
+	// Send message to receiver
+	_, online := GC.data[ClientID(wsMsg.Message.ReceiverID)]
 	if online {
-		err := GC.data[ClientID(msg.To)].Conn.WriteMessage(messageType, []byte(msg.Message))
+		err := GC.data[ClientID(wsMsg.Message.ReceiverID)].Conn.WriteMessage(messageType, jsonMsg)
 		if err != nil {
 			return err
 		}
+	}
+	// Send message back to sender to display
+	err = GC.data[ClientID(wsMsg.Message.UserID)].Conn.WriteMessage(messageType, jsonMsg)
+	if err != nil {
+		return err
 	}
 	return nil
 }

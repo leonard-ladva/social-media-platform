@@ -4,22 +4,22 @@ import router from './router'
 import { createStore } from 'vuex'
 import './assets/css/style.css'
 
+export { store }
+
 const store = createStore({
 	state () {
 		return {
 			user: null,
-			tags: null,
 			allUsers: null,
 			activeUsers: null,
 			offlineUsers: null,
+			messages: new Map(),
+			newMessage: false,
 		}
 	},
 	getters: {
 		user: (state) => {
 			return state.user
-		},
-		tags: (state) => {
-			return state.tags
 		},
 		allUsers: (state) => {
 			return state.allUsers
@@ -30,14 +30,14 @@ const store = createStore({
 		offlineUsers: (state) => {
 			return state.offlineUsers
 		},
+		messages: (state) => {
+			return state.messages
+		}
 	},
 	actions: {
 		user(context, user) {
 			context.commit('user', user)
 		}, 
-		tags(context, tags) {
-			context.commit('tags', tags)
-		},
 		allUsers(context, allUsers) {
 			context.commit('allUsers', allUsers)
 		},
@@ -47,13 +47,18 @@ const store = createStore({
 		offlineUsers(context, offlineUsers) {
 			context.commit('offlineUsers', offlineUsers)
 		},
+		addMessage(context, message) {
+			console.log("adding message to store")
+			context.commit('addMessage', message)
+		},
+		newMessage(context, haveNew) {
+			console.log('received new message')
+			context.commit('newMessage', haveNew)
+		}
 	},
 	mutations: {
 		user(state, user) {
 			state.user = user
-		},
-		tags(state, tags) {
-			state.tags = tags
 		},
 		allUsers(state, allUsers) {
 			state.allUsers = allUsers
@@ -64,6 +69,12 @@ const store = createStore({
 		offlineUsers(state, offlineUsers) {
 			state.offlineUsers = offlineUsers
 		},
+		addMessage(state, message) {
+			state.messages.set(message.chatId, message)
+		},
+		newMessage(state, haveNew) {
+			state.newMessage = haveNew
+		}
 	},
 })
 

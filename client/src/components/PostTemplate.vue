@@ -49,3 +49,16 @@ export default {
 	}
 }
 </script>
+<style>
+	.post {
+		margin: -1px 0 0 -1px ;
+		border: 1px solid var(--extraLightGrey);
+	}
+
+	.post .nickname {
+		font-family: "Chirp Bold";
+	}
+	.post:hover {
+		background-color: var(--extraExtraLightGrey);
+	}
+</style>

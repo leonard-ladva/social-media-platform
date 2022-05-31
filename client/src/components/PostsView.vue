@@ -1,18 +1,20 @@
 <template>
-	<MakePost />
-	<div id="posts">
-		<PostTemplate
-			v-for="post in posts"	
-			:key="post.ID"
+	<div id="postsView">
+		<MakePost @newPost="newPost()"/>
+		<div id="posts">
+			<PostTemplate
+				v-for="post in posts"	
+				:key="post.ID"
 
-			:post="post.post"
-			:user="post.user"
-			:tag="post.tag"
-		/>
-		<TriggerIntersect id="trigger" @triggerIntersected="getPosts" />
-		<h4 id="feedEnd">
-			You've reached the end
-		</h4>
+				:post="post.post"
+				:user="post.user"
+				:tag="post.tag"
+			/>
+			<TriggerIntersect v-if="!outOfPosts" @triggerIntersected="getPosts" />
+			<h4 id="feedEnd">
+				You've reached the end
+			</h4>
+		</div>
 	</div>
 </template>
 	
@@ -28,6 +30,7 @@
 			return {
 				posts: [],
 				lastEarliestPost: '-1',
+				outOfPosts: false,
 			}
 		},
 		components: {
@@ -43,36 +46,25 @@
 				if (response.data.length !== 0) {
 					this.lastEarliestPost = [...response.data].pop().post.createdAt
 				} 
-				if (response.data.length < 5) {
-					const trigger = document.querySelector('#trigger')
-					trigger.remove()
-				} 
+
+				if (response.data.length < 5) { this.outOfPosts = true } 
 			},
+			newPost() {
+				this.lastEarliestPost = -1
+				this.posts = []
+			}
 		},
 	}
 </script>
 
 <style>
-	.post {
-		border: 0.1rem solid var(--extraExtraLightGrey);
+	#postsView {
+		height: 100%;
 	}
 
-	.post .nickname {
-		font-family: "Chirp Bold";
-	}
-	.post:hover {
-		background-color: var(--extraExtraLightGrey);
-	}
-	/* .post .header {
-		display: flex;
-		justify-content: space-around;
-	}
-	.post .body {
-		display: flex;
-		justify-content: space-around;
-	} */
 	#feedEnd {
-		margin: 50px 0;
+		padding: 50px 0;
+		border: 1px solid var(--extraLightGrey)
 	}
 	.tag {
 		background-color: var(--blue);

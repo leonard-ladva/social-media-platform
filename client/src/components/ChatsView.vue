@@ -1,55 +1,41 @@
 <template>
+	<div id="chatsView" :key="this.lastEarliest">
+		<CreateMessage />
 		<div id="previousMessages">
-			<div v-if="$store.state.allUsers" id="conversationEnd">
-				<h3>This is the start of your conversation with {{ otherUser.nickname }}</h3>
-			</div>
-
-			<TriggerIntersect v-if="$store.state.user != null" id="trigger" @triggerIntersected="getMessages" />
 			<ChatMessage
 				v-for="msg in messages"	
 				:key="msg.ID"
 
 				:message="msg"
 			/>
+			<TriggerIntersect  v-if="!outOfMessages && $store.state.user" @triggerIntersected="getMessages" />
+			<div v-if="$store.state.allUsers" id="conversationEnd">
+				<h3>This is the start of your conversation with {{ otherUser.nickname }}</h3>
+			</div>
 		</div>
 
-		<div id="messageCreate" v-if="$store.state.allUsers">
-			<form @submit.prevent="handleSubmit" id="messageForm">
-				<textarea 
-					v-model="message" 
-					class="content" 
-					:placeholder="inputPlaceHolder"
-					@input="resizeTextArea()"	
-					ref="content"
-					resize="none"
-					rows="1"
-				></textarea>
-				<button id="send">
-					Send
-				</button>
-			</form>
-		</div>
-
+	</div>
 </template>
 
 <script>
 import axios from 'axios'
-import { ws } from '../assets/js/websocket.js'
 import ChatMessage from './Message.vue'
 import TriggerIntersect from './Trigger.vue'
+import CreateMessage from './CreateMessage.vue'
 
 export default {
 	name: 'ChatsView',
 	data() {
 		return {
-			message: null,
 			messages: [],
 			lastEarliest: null,
+			outOfMessages: false,
 		}
 	},
 	components: {
 		ChatMessage,
 		TriggerIntersect,
+		CreateMessage,
 	},
 	computed: {
 		receiverID() {
@@ -68,91 +54,51 @@ export default {
 		currentTime() {
 			return (new Date).getTime()
 		},
-		inputPlaceHolder() {
-			return `Secret for ${this.otherUser.nickname}`
+		newMessage() {
+			// console.log(this.$store.state.newMessage)
+			return this.$store.state.newMessage
+		},
+		lastEarliestMessage() {
+			return !this.lastEarliest ? this.currentTime : this.lastEarliest
 		}
 	},
 	methods: {
-		handleSubmit() {
-			let wsMsg = {
-				type: 'message',
-				user: this.$store.state.user, 
-				to: this.otherUser.id, 
-				message: this.message
-			}
-			console.log(wsMsg)
-			ws.sendMessage(wsMsg)
-		},
 		async getMessages() {
-			const response = await axios.get('/latestMessages', {params: {lastEarliest: this.lastEarliest ? this.lastEarliest : this.currentTime, chatID: this.chatID}})
+			const response = await axios.get('/latestMessages', {params: {lastEarliest: this.lastEarliestMessage, chatID: this.chatID}})
 			this.messages = this.messages.concat(response.data)
-			// get the createdAt time of the last post gotten, last post is posted earliest
+
+			// get the createdAt time of the last post gotten, last post is the one posted earliest
 			if (response.data.length !== 0) {
 				this.lastEarliest = [...response.data].pop().createdAt
 			} 
 			if (response.data.length < 10) {
-				const trigger = document.querySelector('#trigger')
-				trigger.remove()
+				this.outOfMessages = true
 			} 
 		},
-		resizeTextArea() {
-			const element = this.$refs.content
-			element.style.height = "auto"
-			element.style.height = (element.scrollHeight + "px")
+	},
+	watch: {
+		newMessage() {
+			console.log("got new message")
+			this.lastEarliest = null
+			this.messages = []
+			// this.getMessages()
+			this.$store.dispatch('newMessage', false)
 		}
 	}
 }
 </script>
 
 <style>
+#chatsView {
+	height: 100%;
+}
 #previousMessages {
+	flex-flow: column nowrap;
 	display: flex;
-	flex-direction: column;
-	align-items: center;
+	margin: 0 0.7rem;
 }
 
 #conversationEnd {
-	margin: 50px 0;
+	padding: 50px 0;
 }
-
-#messageCreate {
-	position: sticky;
-	bottom: 0;
-	height: auto;
-	background-color: var(--white);
-	padding: 1rem 0 1.5rem 0;
-}
-#messageForm {
-	display: flex;
-	align-items: flex-end;
-}
-#messageForm .content {
-	padding: 0.5rem 1.4rem;
-	width: 100%;
-	border-radius: 2rem;
-	background-color: var(--extraLightGrey);
-	border: none;
-	resize: none;
-}
-#messageForm .content:focus {
-	outline: none;
-	box-shadow: none;
-}
-#messagesFeed {
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-}
-
-#send {
-	background-color: var(--blue);
-	border: none;
-	border-radius: 2rem;
-	padding: 0.4rem 0.7rem;
-	font-size: 1.1rem;
-	font-family: "Chirp Bold";
-	color: var(--white);
-	margin: 0 0.6rem 0 0.3rem;
-}
-
 </style>

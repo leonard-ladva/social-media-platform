@@ -20,7 +20,7 @@ func (message Message) Insert() error {
 }
 
 func GetLatestMessages(lastEarliestMessage string, chatID string) (messages []*Message, err error) {
-	query := "SELECT ID, ChatID, UserID, Content, CreatedAt FROM Message WHERE ChatID = ? AND CreatedAt < ? ORDER BY CreatedAt DESC LIMIT 10"
+	query := "SELECT ID, ChatID, UserID, Content, CreatedAt FROM Message WHERE ChatID = ? AND CreatedAt < ? ORDER BY CreatedAt DESC LIMIT 20"
 	rows, err := DB.Query(query, chatID, lastEarliestMessage)
 	if err != nil {
 		return nil, err
@@ -36,4 +36,21 @@ func GetLatestMessages(lastEarliestMessage string, chatID string) (messages []*M
 	}
 
 	return messages, nil
+}
+
+func (message Message) Valid() (bool, error) {
+	senderExsists, _, err := GetUser("ID", message.UserID)
+	if err != nil {
+		return false, err
+	}
+
+	receiverExsists, _, err := GetUser("ID", message.ReceiverID)
+	if err != nil {
+		return false, err
+	}
+
+	if !senderExsists || !receiverExsists || message.Content == "" {
+		return false, nil
+	}
+	return true, nil
 }

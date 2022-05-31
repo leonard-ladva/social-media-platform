@@ -7,7 +7,7 @@
 <script>
 // import NavBar from './components/Nav.vue'
 import axios from './plugins/axios'
-import { ws } from './assets/js/websocket.js'
+import { ws } from './plugins/websocket.js'
 
 
 export default {
@@ -35,6 +35,6 @@ export default {
 <style scoped>
 #primaryPageWrapper {
   height: 100vh;
-  padding: 2rem 2rem 0;
+  padding: 0 3rem;
 }
 </style>

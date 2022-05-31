@@ -21,6 +21,7 @@ export default {
 			// let month = date.toLocaleString("default", {month: "short"})
 			let hours = date.getHours()
 			let minutes = date.getMinutes()
+			minutes = minutes < 10 ? `0${minutes}` : minutes
 
 			return `${hours}:${minutes}`
 		}
@@ -32,7 +33,7 @@ export default {
 <style>
 .message {
 	display: flex;
-	margin: 0.3rem 0 0.1rem 0.5rem;
+	margin: 0.3rem 0 0.1rem 0;
 	padding: 0.5rem 0.8rem;
 	width: fit-content;
 	border-radius: 1.2rem;

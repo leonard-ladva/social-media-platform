@@ -1,7 +1,7 @@
 <template>
 	<form @submit.prevent="submitPost" id="postForm">
 		<div class="form-group" id="top">
-			<input class="tag" type="text" v-model="tag" v-autowidth="{comfortZone: '0.3rem', minWidth: '4rem'}" aria-disabled="true"/>
+			<input class="tag" type="text" v-model="tag" v-autowidth="{comfortZone: '0.5rem', minWidth: '4rem'}" aria-disabled="true"/>
 		</div>
 		<div class="form-group" id="middle">
 			<textarea
@@ -20,7 +20,7 @@
 			<hr>
 		</div>
 		<div class="form-group" id="bottom">
-			<input type="submit" value="Post" id="submit">
+			<button value="Post" id="submit">Post</button>
 		</div>
 	</form>
 </template>
@@ -32,7 +32,6 @@ import axios from '../plugins/axios'
 import { mapGetters } from 'vuex'
 import { directive as VueInputAutowidth } from "vue-input-autowidth"
 
-
 const printableChars = helpers.regex(/[ -~]/)
 
 export default {
@@ -42,7 +41,7 @@ export default {
 	data() {
 		return {
 			content: '',
-			tag: 'Just chilling',
+			tag: '#NoCategory',
 			userId: '',
 		}
 	},
@@ -63,6 +62,11 @@ export default {
 				userId: this.$store.state.user.id,
 			}
 			const response = await axios.post('submitPost', data)
+			if (response.status == 200) {
+				this.$emit('newPost')
+				this.content = ''
+				this.tag = '#NoCategory'
+			}
 			console.log(response)
 		},
 		resizeTextArea() {
@@ -79,8 +83,6 @@ export default {
 
 <style>
 	#postForm {
-		border: 0.1rem solid var(--extraExtraLightGrey);
-		border-top: none;
 		padding: 1rem 1.5rem;
 	}
 

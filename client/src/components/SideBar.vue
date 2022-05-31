@@ -8,7 +8,7 @@
 
 
 		<div id="activeUsers" v-if="$store.state.activeUsers">
-			<h3>Active Users</h3>
+			<h3 v-if="$store.state.activeUsers.size != 0">Active Users</h3>
 			<UserCard
 			v-for="user of $store.state.activeUsers.values()" 
 			:user="user"
@@ -72,7 +72,11 @@ export default {
 		this.$store.dispatch('allUsers', users)
 		
 		this.sortUsersStatus(users)
-
+		
+		await Notification.requestPermission();
+		new Notification('Hi, How are you?',{
+		body: 'Have a good day',
+		});
 	},
 	components: {
 		UserCard,
@@ -82,12 +86,18 @@ export default {
 
 <style>
 	#sidebar {
-		width: 30%;
+		width: 35%;
+		max-width: 250px;
+		margin-left: 1rem;
 	}
 
+	#activeUsers, #offlineUsers {
+		margin-top: 2.3rem;
+	}
 	#activeUsers .userCard, #offlineUsers .userCard {
 		margin: 0.7rem 0;
 	}
+
 	#currentUser .title {
 		font-family: "Chirp Bold";
 		margin-bottom: 0px;
@@ -95,7 +105,5 @@ export default {
 	#currentUser .logout {
 		font-size: 0.8rem;
 	}
-	#activeUsers, #offlineUsers {
-		margin-top: 2.3rem;
-	}
+	
 </style>
