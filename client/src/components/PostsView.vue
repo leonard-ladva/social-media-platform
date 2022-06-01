@@ -64,7 +64,8 @@
 
 	#feedEnd {
 		padding: 50px 0;
-		border: 1px solid var(--extraLightGrey)
+		border: 1px solid var(--extraLightGrey);
+		margin: -1px 0 0 -1px;
 	}
 	.tag {
 		background-color: var(--blue);

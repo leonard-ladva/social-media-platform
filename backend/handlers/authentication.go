@@ -198,17 +198,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 // CurrentUser checks if the client has token present in the db
 func CurrentUser(w http.ResponseWriter, r *http.Request) {
 	// r.Header.Get("Authorization") returns "Bearer <ActualToken>", so we only need the second part
-	token := strings.Split(r.Header.Get("Authorization"), " ")[1]
+	// token := strings.Split(r.Header.Get("Authorization"), " ")[1]
 
 	var user = data.CurrentUser
 	user.Password = []byte("")
 
-	response := LoginResponse{
-		Message: "Success",
-		Token:   token,
-		User:    user,
-	}
-	data, err := json.Marshal(response)
+	// response := LoginResponse{
+	// 	Message: "Success",
+	// 	Token:   token,
+	// 	User:    user,
+	// }
+	data, err := json.Marshal(user)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

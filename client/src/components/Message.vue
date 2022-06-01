@@ -14,7 +14,7 @@ export default {
 	},
 	computed: {
 		messageType() {
-			return this.message.userId == this.$store.state.user.id ? "sentMessage" : "receivedMessage"
+			return this.message.userId == this.$store.state.currentUser.id ? "sentMessage" : "receivedMessage"
 		},
 		messageTime() {
 			let date = new Date(this.message.createdAt)

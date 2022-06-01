@@ -59,7 +59,7 @@ export default {
 			const data = {
 				tag: this.tag,
 				content: this.content,
-				userId: this.$store.state.user.id,
+				userId: this.$store.state.currentUser.id,
 			}
 			const response = await axios.post('submitPost', data)
 			if (response.status == 200) {

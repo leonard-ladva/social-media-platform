@@ -41,27 +41,22 @@
 		},
 		methods: {
 			async handleSubmit() {
-				let data = await this.loginRequest()
-				if (data.User) {
-					this.$router.push({name: 'feed'})
-				}
-
-			},
-			async loginRequest() {
-				try {
-					const response = await axios.post('login', {
-						nickname: this.nickname,
-						passwordPlain: this.password,
-					})
+				const response = await axios.post('login', {
+					nickname: this.nickname,
+					passwordPlain: this.password,
+				})
+				if (response.status === 200) {
 					localStorage.setItem('token', response.data.Token)
-					this.$store.dispatch('user', response.data.User)
-					return response.data 
-				} catch(err) {
-					console.log(err)
-					return err
-					// show error on login form
+					this.$store.dispatch('logInUser', response.data.User)
+					this.$router.push({name: 'feed'})
+				} else {
+					console.log(`ERROR: Login. Status Code: ${response.status}`)
 				}
 			},
 		},
+		created() {
+			localStorage.removeItem('token')
+			this.$store.dispatch('logOutUser')
+		}
 	}
 </script>

@@ -1,15 +1,15 @@
 <template>
-	<div id="chatsView" :key="this.lastEarliest">
-		<CreateMessage />
+	<div id="chatsView" :key="this.lastEarliest" v-if="$store.getters.loaded">
+		<CreateMessage ref="createMessage"/>
 		<div id="previousMessages">
 			<ChatMessage
 				v-for="msg in messages"	
-				:key="msg.ID"
+				:key="msg.id"
 
 				:message="msg"
 			/>
-			<TriggerIntersect  v-if="!outOfMessages && $store.state.user" @triggerIntersected="getMessages" />
-			<div v-if="$store.state.allUsers" id="conversationEnd">
+			<TriggerIntersect v-if="!outOfMessages" @triggerIntersected="getMessages" />
+			<div id="conversationEnd">
 				<h3>This is the start of your conversation with {{ otherUser.nickname }}</h3>
 			</div>
 		</div>
@@ -49,40 +49,49 @@ export default {
 			return this.userID < this.receiverID ? this.userID + this.receiverID : this.receiverID + this.userID
 		},
 		userID() {
-			return this.$store.state.user.id
+			return this.$store.state.currentUser.id
 		},
 		currentTime() {
 			return (new Date).getTime()
 		},
-		newMessage() {
-			// console.log(this.$store.state.newMessage)
-			return this.$store.state.newMessage
-		},
 		lastEarliestMessage() {
 			return !this.lastEarliest ? this.currentTime : this.lastEarliest
-		}
+		},
+		newMessages() {
+			return this.$store.state.newMessages
+		},
+
 	},
 	methods: {
 		async getMessages() {
-			const response = await axios.get('/latestMessages', {params: {lastEarliest: this.lastEarliestMessage, chatID: this.chatID}})
-			this.messages = this.messages.concat(response.data)
+			const response = await axios.get('/latestMessages', {
+				params: {
+					lastEarliest: this.lastEarliestMessage,
+					chatID: this.chatID
+				}
+			})
+			if (response.status === 200) {
+				this.messages = this.messages.concat(response.data)
 
-			// get the createdAt time of the last post gotten, last post is the one posted earliest
-			if (response.data.length !== 0) {
-				this.lastEarliest = [...response.data].pop().createdAt
-			} 
-			if (response.data.length < 10) {
-				this.outOfMessages = true
-			} 
+				// get the createdAt time of the last post gotten, last post is the one posted earliest
+				if (response.data.length !== 0) {
+					this.lastEarliest = [...response.data].pop().createdAt
+				} 
+				if (response.data.length < 10) {
+					this.outOfMessages = true
+				} 
+			}
 		},
 	},
 	watch: {
-		newMessage() {
-			console.log("got new message")
-			this.lastEarliest = null
-			this.messages = []
-			// this.getMessages()
-			this.$store.dispatch('newMessage', false)
+		newMessages: {
+			deep: true,
+			handler() {
+				if(this.newMessages.has(this.chatID)) {
+					this.messages.unshift(this.newMessages.get(this.chatID))
+				}
+				this.$refs.createMessage.messageSentSuccess()
+			}
 		}
 	}
 }
@@ -97,8 +106,8 @@ export default {
 	display: flex;
 	margin: 0 0.7rem;
 }
-
 #conversationEnd {
 	padding: 50px 0;
+	/* margin: -1px 0; */
 }
 </style>

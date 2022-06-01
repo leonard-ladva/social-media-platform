@@ -24,11 +24,7 @@ const ws = {
 			switch (wsMsg.type) {
 				// A new message has been sent to the user
 				case 'message':
-					console.log('Received')
-					store.dispatch('newMessage', true)
-					if (wsMsg.message.userId != store.state.user.id) {
-						store.dispatch('addMessage', wsMsg.message)	
-					}
+					store.dispatch('newMessage', wsMsg.message)
 					break
 				// A new user came online
 				case 'online':

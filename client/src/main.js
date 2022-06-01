@@ -3,77 +3,105 @@ import App from './App.vue'
 import router from './router'
 import { createStore } from 'vuex'
 import './assets/css/style.css'
+import axios from 'axios'
 
 export { store }
 
 const store = createStore({
 	state () {
 		return {
-			user: null,
-			allUsers: null,
-			activeUsers: null,
-			offlineUsers: null,
-			messages: new Map(),
-			newMessage: false,
+			currentUser: null,
+			loggedIn: false,
+			allUsers: new Map(), // UserID: UserObject
+			newMessages: new Map(), // ChatID: message
+			notifications: []
 		}
 	},
 	getters: {
-		user: (state) => {
-			return state.user
+		activeUsers(state) {
+			let activeUsers = new Map()
+			for (let user of state.allUsers.values()) {
+				if (user.active === true) {
+					activeUsers.set(user.id, user)
+				}
+			}
+			return activeUsers
 		},
-		allUsers: (state) => {
-			return state.allUsers
+		offlineUsers(state) {
+			let offlineUsers = new Map()
+			for (let user of state.allUsers.values()) {
+				if (user.active === false) {
+					offlineUsers.set(user.id, user)
+				}
+			}
+			return offlineUsers
 		},
-		activeUsers: (state) => {
-			return state.activeUsers
-		},
-		offlineUsers: (state) => {
-			return state.offlineUsers
-		},
-		messages: (state) => {
-			return state.messages
+		loaded(state) {
+			return state.currentUser && state.allUsers.size != 0
 		}
 	},
 	actions: {
-		user(context, user) {
-			context.commit('user', user)
-		}, 
-		allUsers(context, allUsers) {
-			context.commit('allUsers', allUsers)
+		async getUsers(context) {
+			let response = await axios.get('/users')	
+			if (response.status === 200) {
+				for (let user of response.data) {
+					context.commit('newUser', user)
+				}
+			} else {
+				console.log(`ERROR: getting users. Status: ${response.status}`)
+			}
 		},
-		activeUsers(context, activeUsers) {
-			context.commit('activeUsers', activeUsers)
+		async getCurrentUser(context) {
+			let response = await axios.get('/user')
+			if (response.status === 200) {
+				context.commit('setLoggedIn')
+				context.commit('setCurrentUser', response.data)
+			} else if (response.status === 401) {
+				console.log("You're Not Logged In.")
+			} else {
+				console.log(`ERROR: getting Current User. Status: ${response.status}`)
+			}
 		},
-		offlineUsers(context, offlineUsers) {
-			context.commit('offlineUsers', offlineUsers)
+		logInUser(context, user) {
+			context.commit('setLoggedIn')
+			context.commit('setCurrentUser', user)
 		},
-		addMessage(context, message) {
-			console.log("adding message to store")
+		logOutUser(context) {
+			context.commit('setLoggedOut')
+			context.commit('setCurrentUser', null)
+		},
+		newMessage(context, message) {
 			context.commit('addMessage', message)
+			context.commit('newNotification', message)
 		},
-		newMessage(context, haveNew) {
-			console.log('received new message')
-			context.commit('newMessage', haveNew)
+		removeFirstNotification(context) {
+			context.commit('removeFirstNotification')
 		}
 	},
 	mutations: {
-		user(state, user) {
-			state.user = user
-		},
-		allUsers(state, allUsers) {
-			state.allUsers = allUsers
-		},
-		activeUsers(state, activeUsers) {
-			state.activeUsers = activeUsers
-		},
-		offlineUsers(state, offlineUsers) {
-			state.offlineUsers = offlineUsers
+		newUser(state, user) {
+			state.allUsers.set(user.id, user)
 		},
 		addMessage(state, message) {
-			state.messages.set(message.chatId, message)
+			state.newMessages.set(message.chatId, message)
 		},
 		newMessage(state, haveNew) {
 			state.newMessage = haveNew
+		},
+		setLoggedIn(state) {
+			state.loggedIn = true
+		},
+		setLoggedOut(state) {
+			state.loggedIn = false
+		},
+		setCurrentUser(state, user) {
+			state.currentUser = user
+		},
+		newNotification(state, notification) {
+			state.notifications.push(notification)
+		},
+		removeFirstNotification(state) {
+			state.notifications.shift()
 		}
 	},
 })

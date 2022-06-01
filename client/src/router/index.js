@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../components/Home.vue'
 import ChatsView from '../components/ChatsView.vue'
 import PostsView from '../components/PostsView.vue'
+// import { store } from '../main.js'
 
 const routes = [
 	{
@@ -12,6 +13,11 @@ const routes = [
 	{
 		path: '/',
 		name: 'home',
+		// beforeEnter: () => {
+		// 	if (!store.state.loggedIn) {
+		// 		return {name: 'login'}
+		// 	}
+		// },
 		redirect: {name: 'feed'},
 		component: HomeView,
 		children: [

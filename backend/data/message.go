@@ -20,7 +20,7 @@ func (message Message) Insert() error {
 }
 
 func GetLatestMessages(lastEarliestMessage string, chatID string) (messages []*Message, err error) {
-	query := "SELECT ID, ChatID, UserID, Content, CreatedAt FROM Message WHERE ChatID = ? AND CreatedAt < ? ORDER BY CreatedAt DESC LIMIT 20"
+	query := "SELECT ID, ChatID, UserID, Content, CreatedAt FROM Message WHERE ChatID = ? AND CreatedAt < ? ORDER BY CreatedAt DESC LIMIT 10"
 	rows, err := DB.Query(query, chatID, lastEarliestMessage)
 	if err != nil {
 		return nil, err

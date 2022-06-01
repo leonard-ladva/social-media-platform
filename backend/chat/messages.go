@@ -128,6 +128,9 @@ func (wsMsg WebsocketMessage) sendToClient(messageType int) error {
 			return err
 		}
 	}
+	// If sender is also receiver return to not send message to user twice
+	if wsMsg.Message.UserID == wsMsg.Message.ReceiverID { return nil }
+
 	// Send message back to sender to display
 	err = GC.data[ClientID(wsMsg.Message.UserID)].Conn.WriteMessage(messageType, jsonMsg)
 	if err != nil {

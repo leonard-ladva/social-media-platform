@@ -1,5 +1,5 @@
 <template>
-	<div id="messageCreate" v-if="$store.state.allUsers">
+	<div id="messageCreate" v-if="$store.getters.loaded">
 		<form @submit.prevent="handleSubmit" id="messageForm">
 			<textarea 
 				v-model="message" 
@@ -27,11 +27,10 @@ export default {
 	methods: {
 		handleSubmit() {
 			let msg = {
-				userId: this.$store.state.user.id, 
+				userId: this.$store.state.currentUser.id, 
 				receiverId: this.receiverID, 
 				content: this.message,
 			}
-			console.log('yes')
 			ws.sendMessage(msg)
 		},
 		resizeTextArea() {
@@ -39,6 +38,9 @@ export default {
 			element.style.height = "auto"
 			element.style.height = (element.scrollHeight + "px")
 		},
+		messageSentSuccess() {
+			this.message = null
+		}
 	},
 	computed: {
 		receiverID() {

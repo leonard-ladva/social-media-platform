@@ -6,34 +6,29 @@
 		</div>
 		<SideBar/>
 	</div>
-	<MessageNotification 
-	v-for="message in $store.state.messages.values()" 
-	:key="message.chatId"
-	:message="message"
-	/>
+	<MessageNotification v-for="notification in notifications" :key="notification.id" :message="notification"/>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import SideBar from './SideBar.vue'
 import TitleBar from './Titlebar.vue'
 import MessageNotification from './Notification.vue'
 
 export default {
 	name: 'HomePage',
-	computed: {
-		...mapGetters(['user']),
-	},
 	components: {
 		SideBar,
 		TitleBar,
 		MessageNotification,
 	},
-	// created() {
-	// 	if (!localStorage.getItem('token')) {
-	// 		this.$router.push({name: 'login'})
-	// 	}
-	// }
+	computed: {
+		notifications() {
+			return this.$store.state.notifications
+		},
+	},
+	async created() {
+		await this.$store.dispatch('getUsers')
+	},
 }
 </script>
 
@@ -53,5 +48,4 @@ export default {
 		border-left: 1px solid var(--extraLightGrey);
 		border-right: 1px solid var(--extraLightGrey);
 	}
-
 </style>
