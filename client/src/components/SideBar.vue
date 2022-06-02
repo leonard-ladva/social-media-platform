@@ -6,22 +6,20 @@
 			<a class="logout" href="javascript:void(0)" @click="logout">Log out</a>
 		</div>
 
-
-		<div id="activeUsers" v-if="activeWithoutCurrent.length !== 0">
-			<h3>Active Users</h3>
+		<div id="allUsers">
+			<h4>Chats</h4>
 			<UserCard
 			v-for="user of activeWithoutCurrent" 
 			:user="user"
 			:key="user.id" 
-			:active ="true" />
-		</div>
+			:active ="true" 
+			/>
 
-		<div id="offlineUsers" v-if="offlineWithoutCurrent.length !== 0">
-			<h3>Offline Users</h3>
 			<UserCard
 			v-for="user of offlineWithoutCurrent" 
 			:user="user"
-			:key="user.id" />
+			:key="user.id" 
+			/>
 		</div>
 
 	</div>	
@@ -29,6 +27,7 @@
 
 <script>
 import UserCard from './UserCard.vue'
+import { ws } from '../plugins/websocket.js'
 
 export default {
 	name: 'SideBar',
@@ -36,6 +35,7 @@ export default {
 		logout() {
 			this.$router.push({name: 'login'})
 			localStorage.removeItem('token')
+			ws.disconnect()
 		},
 	},
 	computed: {
@@ -62,10 +62,10 @@ export default {
 		max-width: 250px;
 		margin-left: 1rem;
 	}
-	#activeUsers, #offlineUsers {
+	#allUsers {
 		margin-top: 2.3rem;
 	}
-	#activeUsers .userCard, #offlineUsers .userCard {
+	#allUsers .userCard {
 		margin: 0.7rem 0;
 	}
 	#currentUser .title {

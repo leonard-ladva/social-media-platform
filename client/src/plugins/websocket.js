@@ -28,11 +28,11 @@ const ws = {
 					break
 				// A new user came online
 				case 'online':
-				
+					store.dispatch('userCameOnline', wsMsg.userId)	
 					break
 				// A user went offline
 				case 'offline':
-
+					store.dispatch('userWentOffline', wsMsg.userId)
 					break
 			}
 		}
@@ -45,6 +45,9 @@ const ws = {
 
 			console.log("Successfully connected to the websocket")
 		}
+	},
+	disconnect: function() {
+		this.connection.close(1000, "User Loggged out.")
 	},
 	sendMessage: function(message) {
 		let wsMsg = {type: 'message', message: message}

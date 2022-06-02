@@ -76,6 +76,12 @@ const store = createStore({
 		},
 		removeFirstNotification(context) {
 			context.commit('removeFirstNotification')
+		},
+		userWentOffline(context, userID) {
+			context.commit('setUserNotActive', userID)
+		},
+		userCameOnline(context, userID) {
+			context.commit('setUserActive', userID)
 		}
 	},
 	mutations: {
@@ -102,6 +108,12 @@ const store = createStore({
 		},
 		removeFirstNotification(state) {
 			state.notifications.shift()
+		},
+		setUserNotActive(state, userID) {
+			state.allUsers.get(userID).active = false
+		},
+		setUserActive(state, userID) {
+			state.allUsers.get(userID).active = true
 		}
 	},
 })

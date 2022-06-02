@@ -2,10 +2,12 @@ package chat
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 
+	"git.01.kood.tech/Rostislav/real-time-forum/data"
 	"github.com/gorilla/websocket"
 )
 
@@ -26,10 +28,13 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func wsReader(conn *websocket.Conn) {
+	var clientID ClientID
 	for {
+		fmt.Println("\n------\n", GC.list(), "\n------")
 		messageType, body, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
+			WebsocketClosed(clientID, conn)
 			return
 		}
 		var wsMsg WebsocketMessage
@@ -37,7 +42,12 @@ func wsReader(conn *websocket.Conn) {
 
 		switch wsMsg.Type {
 		case "auth":
-			authenticate(conn, wsMsg.UserID)
+			clientID, err = authenticate(conn, wsMsg.UserID)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			WebsocketOpened(clientID)
 		case "message":
 			err := handleMessage(conn, wsMsg, messageType)
 			if err != nil {
@@ -45,12 +55,42 @@ func wsReader(conn *websocket.Conn) {
 				return
 			}
 		}
-		fmt.Println(wsMsg)
-
-		// if err := conn.WriteMessage(messageType, body); err != nil {
-		// 	log.Println(err)
-		// 	return
-		// }
-
 	}
+}
+
+func WebsocketClosed(cid ClientID, conn *websocket.Conn) {
+	GC.Del(cid)
+	conn.Close()
+
+	var wsMsg WebsocketMessage
+	wsMsg.Type = "offline"
+	wsMsg.UserID = string(cid)
+
+	wsMsg.broadcast(1)
+}
+
+func WebsocketOpened(cid ClientID) {
+	var wsMsg WebsocketMessage
+	wsMsg.Type = "online"
+	wsMsg.UserID = string(cid)
+
+	wsMsg.broadcast(1)
+}
+
+func authenticate(conn *websocket.Conn, UserID string) (ClientID, error) {
+	client := new(Client)
+	client.Id = ClientID(UserID)
+	client.Conn = conn
+	exsists, user, err := data.GetUser("ID", UserID)
+	if err != nil {
+		return client.Id, err
+	}
+	if !exsists {
+		return client.Id, errors.New("User Doesn't exist")
+	}
+	client.Nickname = user.Nickname
+
+	GC.Add(client)
+
+	return client.Id, nil
 }

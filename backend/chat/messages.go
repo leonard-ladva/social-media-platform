@@ -3,7 +3,6 @@ package chat
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -41,17 +40,6 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(data)
-}
-
-func authenticate(conn *websocket.Conn, UserID string) {
-	client := new(Client)
-	client.Id = ClientID(UserID)
-	client.Conn = conn
-
-	GC.Add(client)
-	// defer GC.Del(client.Id)
-
-	fmt.Println(GC.list())
 }
 
 func handleMessage(conn *websocket.Conn, wsMsg WebsocketMessage, messageType int) error {
@@ -129,12 +117,26 @@ func (wsMsg WebsocketMessage) sendToClient(messageType int) error {
 		}
 	}
 	// If sender is also receiver return to not send message to user twice
-	if wsMsg.Message.UserID == wsMsg.Message.ReceiverID { return nil }
+	if wsMsg.Message.UserID == wsMsg.Message.ReceiverID {
+		return nil
+	}
 
 	// Send message back to sender to display
 	err = GC.data[ClientID(wsMsg.Message.UserID)].Conn.WriteMessage(messageType, jsonMsg)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (wsMsg WebsocketMessage) broadcast(messageType int) error {
+	jsonMsg, err := json.Marshal(wsMsg)
+	if err != nil {
+		return err
+	}
+
+	for _, client := range GC.list() {
+		client.Conn.WriteMessage(messageType, jsonMsg)
 	}
 	return nil
 }

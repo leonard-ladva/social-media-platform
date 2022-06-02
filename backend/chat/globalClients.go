@@ -14,15 +14,15 @@ type globalClients struct {
 }
 type Client struct {
 	Conn *websocket.Conn
-	// Name string
+	Nickname string
 	Id ClientID
 }
 
 type ClientID string
 
 type ClientList struct {
-	Name string   `json:"client_name"`
-	ID   ClientID `json:"client_id"`
+	ID   ClientID
+	Conn *websocket.Conn
 }
 
 func (gc *globalClients) Add(cl *Client) {
@@ -37,15 +37,16 @@ func (gc *globalClients) Del(cid ClientID) {
 	delete(gc.data, cid)
 }
 
-func (gc *globalClients) list() []ClientList {
+func (gc *globalClients) list() []Client {
 
 	gc.RLock()
 	defer gc.RUnlock()
 
-	out := []ClientList{}
+	out := []Client{}
 
 	for _, cl := range gc.data {
-		out = append(out, ClientList{ID: cl.Id})
+		out = append(out, Client{Id: cl.Id, Nickname: cl.Nickname, Conn: cl.Conn})
+		// out = append(out, Client{Nickname: cl.Nickname})
 	}
 
 	return out

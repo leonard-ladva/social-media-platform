@@ -1,6 +1,6 @@
 <template>
 	<router-link :to="{name: 'chat', params:{receiverId: user.id}}" class="chatLink"> 
-		<div class="userCard">
+		<div class="userCard" :style="background">
 			<span class="profilePicture" :style="profilePic" ></span>
 			<span class="nickname">{{ user.nickname }}</span>
 			<span v-if="active" class="activeDot"></span>
@@ -19,6 +19,13 @@
 			profilePic() {
 				return 'background-color: ' + this.user.color
 			},
+			background() {
+				// If current route is this users chat
+				if (this.$route.params.receiverId == this.user.id) {
+					return 'background-color: var(--extraLightGrey)'
+				}
+				return 'background-color: var(--extraExtraLightGrey)'
+			}
 		},
 	}
 </script>:
