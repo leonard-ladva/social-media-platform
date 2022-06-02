@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -27,6 +28,7 @@ func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// r.Header.Get("Authorization") returns "Bearer <ActualToken>", so we only need the second part
 		token := strings.Split(r.Header.Get("Authorization"), " ")[1]
+		fmt.Println("token: ", token)
 
 		session, err := data.GetSession(token)
 		if err == sql.ErrNoRows {
