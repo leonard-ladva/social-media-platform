@@ -1,13 +1,13 @@
 	@font-face {
-		font-family: Chirp Regular;
+		font-family: "Chirp Regular";
 		src: url('../fonts/chirp-regular-web.ttf');
 	}
 	@font-face {
-		font-family: Chirp Bold;
+		font-family: "Chirp Bold";
 		src: url('../fonts/chirp-bold-web.ttf');
 	}
 	@font-face {
-		font-family: Chirp Heavy;
+		font-family: "Chirp Heavy";
 		src: url('../fonts/chirp-heavy-web.ttf');
 	}
 

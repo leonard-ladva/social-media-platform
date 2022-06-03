@@ -3,11 +3,13 @@
 		<div class="post">
 			<div class="header">
 				<span class="profilePicture" :style="style"></span>
-				<p class="nickname">{{ user.nickname }} </p>
-				<p>{{ dateTime }}</p>
+				<h6 class="user">{{ user.firstName }} {{ user.lastName }} 
+					<span>@{{user.nickname}}</span>
+					<span>· {{dateTime}}</span>	
+				</h6>
 			</div>
 			<div class="body">
-				<p>{{ post.content }}</p>
+				<p class="content">{{ post.content }}</p>
 				<span class="badge tag">{{ tag.title }}</span>
 			</div>
 		</div>
@@ -55,11 +57,23 @@ export default {
 	.post {
 		margin: -1px 0 0 -1px ;
 		border: 1px solid var(--extraLightGrey);
-		color: var(--black)
+		color: var(--black);
+		padding: 1.2rem;
 	}
-
-	.post .nickname {
-		font-family: "Chirp Bold";
+	.post .header {
+		display: flex;
+	}
+	.post .body {
+		text-align: left;
+		margin: -1rem 0 0 calc(50px + 1rem);
+	}
+	.user {
+		margin: 0.2rem 1rem;
+	}
+	.user span {
+		color: var(--darkGrey);
+		font-family: "Chirp Regular";
+		margin-left: 0.4rem;
 	}
 	.post:hover {
 		background-color: var(--extraExtraLightGrey);

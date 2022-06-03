@@ -13,9 +13,9 @@ const store = createStore({
 		return {
 			currentUser: null,
 			loggedIn: false,
-			allUsers: new Map(), // UserID: UserObject
+			allUsers: new Map(), // UserID: User
 			newMessages: new Map(), // ChatID: message
-			notifications: []
+			notifications: [],
 		}
 	},
 	getters: {
@@ -139,7 +139,7 @@ const store = createStore({
 		},
 		setUserActive(state, userID) {
 			state.allUsers.get(userID).active = true
-		}
+		},
 	},
 })
 

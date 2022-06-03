@@ -35,7 +35,7 @@ export default {
 			this.$router.push({name: 'login'})
 		})
 
-		this.$store.dispatch('getUsers')	
+		this.$store.dispatch('getUsers')
 	}
 }
 </script>

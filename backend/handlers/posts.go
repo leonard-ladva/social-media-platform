@@ -101,3 +101,46 @@ func LatestPosts(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(data)
 }
+
+func GetPost(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	var postID = queryParams["postId"][0]
+
+	post, err := data.GetPost(postID)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	postInfo := PostInfo{}
+
+	postInfo.Post = post
+	// Get tag by TagID
+	tag, err := data.GetTagByID(post.TagID)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	postInfo.Tag = tag
+	// Get User by UserID
+	_, user, err := data.GetUser("ID", post.UserID)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	user.Password = []byte("")
+	user.Email = ""
+	postInfo.User = user
+
+	data, err := json.Marshal(postInfo)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(data)
+}
+

@@ -66,6 +66,18 @@ func LatestPosts(lastEarliestPost string) ([]*Post, error) {
 	return posts, nil
 }
 
+func GetPost(postID string) (*Post, error) {
+	p := &Post{}
+	query := "SELECT ID, Content, TagID, UserId, CreatedAt FROM Post WHERE ID = ?"
+	row := DB.QueryRow(query, postID)
+	err := row.Scan(&p.ID, &p.Content, &p.TagID, &p.UserID, &p.CreatedAt)
+	if err == sql.ErrNoRows {
+		return p, nil
+	} else if err != nil {
+		return p, errors.New("data: getting user")
+	}
+	return p, nil
+}
 // IsValid checks all the post fields and returns true if valid
 func (p *Post) IsValid() (bool, error) {
 	errs := url.Values{}

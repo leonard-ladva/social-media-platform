@@ -14,11 +14,10 @@
 				@blur="v$.content.$touch()"
 				@focus="v$.content.$reset()"
 			/>
-			<hr>
+			<button value="Comment" id="submit" :disabled="!readyToComment">Reply</button>
 		</div>
-		<span v-if="error" class="error badge bg-secondary">Something went wrong</span>
 		<div class="form-group" id="bottom">
-			<button value="Comment" id="submit" :disabled="!readyToComment">Comment</button>
+			<span v-if="error" class="error badge bg-secondary">Something went wrong</span>
 		</div>
 	</form>
 </template>
@@ -86,14 +85,14 @@ export default {
 	#commentForm {
 		padding: 1rem 1.5rem;
 	}
-
-	#top, #bottom {
-		text-align: right;		
+	#middle {
+		display: flex;
+		align-items: flex-start;
 	}
 	textarea#content {
 		border: none;
 		resize: none;
-		font-size: 1.5rem;
+		font-size: 1.3rem;
 	}
 	textarea#content:focus, input.tag:focus {
 		outline: none;
@@ -108,7 +107,8 @@ export default {
 		font-size: 1rem;
 		font-family: "Chirp Bold";
 		color: var(--white);
-		margin: 0 0.6rem 0 0.3rem;
+		margin-top: 0.3rem;
+		height: auto;
 	}
 	#submit:disabled {
 		background-color: var(--lightGrey)

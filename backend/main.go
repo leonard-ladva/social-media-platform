@@ -21,6 +21,7 @@ func setupRoutes() {
 	// Posts
 	http.HandleFunc("/submitPost", mid.EnableCors(mid.Authenticate(handlers.SubmitPost)))
 	http.HandleFunc("/latestPosts", mid.EnableCors(mid.Authenticate(handlers.LatestPosts)))
+	http.HandleFunc("/post", mid.EnableCors(mid.Authenticate(handlers.GetPost)))
 	// Tags
 	http.HandleFunc("/tags", mid.EnableCors(mid.Authenticate(handlers.GetTagsHandler)))
 	// Chats
@@ -30,6 +31,7 @@ func setupRoutes() {
 	// Comments
 	http.HandleFunc("/submitComment", mid.EnableCors(mid.Authenticate(handlers.SubmitComment)))
 	http.HandleFunc("/latestComments", mid.EnableCors(mid.Authenticate(handlers.LatestComments)))
+
 
 }
 

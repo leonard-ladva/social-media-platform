@@ -1,5 +1,11 @@
 <template>
-	<div id="commentsView">
+	<div id="postPage">
+		<Template_Post v-if="currentPost !== null"
+			:post="currentPost.post"
+			:user="currentPost.user"
+			:tag="currentPost.tag"
+		/>
+		<hr class="divider">
 		<Form_Comment @newComment="newComment()"/>
 		<div id="comments">
 			<Template_Comment
@@ -20,6 +26,7 @@
 <script>
 	import axios from '../plugins/axios'
 	import Template_Comment from './Template_Comment.vue' 
+	import Template_Post from './Template_Post.vue' 
 	import TriggerIntersect from './Trigger.vue'
 	import Form_Comment from './Form_Comment.vue'
 
@@ -30,12 +37,14 @@
 				comments: [],
 				lastEarliestComment: '-1',
 				outOfComments: false,
+				currentPost: null,
 			}
 		},
 		components: {
 			Template_Comment,
 			TriggerIntersect,
 			Form_Comment,
+			Template_Post,
 		},
 		methods: {
 			async getComments() {
@@ -48,17 +57,29 @@
 
 				if (response.data.length < 5) { this.outOfComments = true } 
 			},
-			newComment() {
+			async newComment() {
 				this.lastEarliestComment = -1
 				this.comments = []
+				await this.getComments()
 				this.outOfComments = false
 			}
 		},
+		async created() {
+			axios.get('/post', {params: {postId: this.$route.params.postId}})
+			.then(({data, status}) => {
+				if (status === 200) {
+					this.currentPost = data
+				}
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+		}
 	}
 </script>
 
 <style>
-	#commentsView {
+	#postPage {
 		height: 100%;
 	}
 
@@ -67,7 +88,26 @@
 		border: 1px solid var(--extraLightGrey);
 		margin: -1px 0 0 -1px;
 	}
-	.tag {
+	.divider {
+		margin-left: 8%;
+		width: 84%;
+	}
+	#postPage .post {
+		margin: -1px 0 0 -1px ;
+		border: 1px solid var(--extraLightGrey);
+		border-bottom: none;
+		padding: 1.2rem;
+	}
+	#postPage .post .tag {
+		font-size: 0.7rem;
 		background-color: var(--blue);
+	}
+	#postPage .post .body {
+		text-align: left;
+		margin: -1rem 0 0 calc(50px + 1rem);
+		font-size: 1.5rem;
+	}
+	#postPage .post:hover {
+		background-color: var(--white);
 	}
 </style>

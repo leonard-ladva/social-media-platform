@@ -1,6 +1,6 @@
 <template>
 	<div id="sidebar" v-if="$store.state.loggedIn">
-		<div id="currentUser" v-if="$store.state.loggedIn">
+		<div id="currentUser">
 			<p class="title">Logged in user</p>
 			<Template_User :user="$store.state.currentUser" :active="true" />
 			<a class="logout" href="javascript:void(0)" @click="logout">Log out</a>
