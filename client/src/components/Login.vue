@@ -58,9 +58,3 @@
 		},
 	}
 </script>
-
-<style scoped>
-	/* .error { */
-		/* background-color: red; */
-	/* } */
-</style>

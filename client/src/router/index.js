@@ -1,8 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../components/Home.vue'
-import ChatsView from '../components/ChatsView.vue'
-import PostsView from '../components/PostsView.vue'
-// import { store } from '../main.js'
 
 const routes = [
 	{
@@ -14,17 +10,22 @@ const routes = [
 		path: '/',
 		name: 'home',
 		redirect: {name: 'feed'},
-		component: HomeView,
+		component: ()=> import('../components/Home.vue'),
 		children: [
 			{
 				path: 'feed',
 				name: 'feed',
-				component: PostsView,
+				component: ()=> import('../components/Page_Feed.vue'),
 			},
 			{
 				path: 'chat/:receiverId',
 				name: 'chat', 
-				component: ChatsView,
+				component: ()=> import('../components/Page_Chat.vue'),
+			},
+			{
+				path: 'post/:postId',
+				name: 'post',
+				component: ()=> import('../components/Page_Post.vue'),
 			}
 		]
 	},

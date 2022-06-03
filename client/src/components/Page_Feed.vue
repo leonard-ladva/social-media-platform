@@ -4,7 +4,7 @@
 		<div id="posts">
 			<PostTemplate
 				v-for="post in posts"	
-				:key="post.ID"
+				:key="post.id"
 
 				:post="post.post"
 				:user="post.user"

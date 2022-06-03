@@ -1,25 +1,21 @@
 <template>
-	<router-link :to="{name: 'post', params:{postId: post.id}}" class="postLink"> 
-		<div class="post">
-			<div class="header">
-				<span class="profilePicture" :style="style"></span>
-				<p class="nickname">{{ user.nickname }} </p>
-				<p>{{ dateTime }}</p>
-			</div>
-			<div class="body">
-				<p>{{ post.content }}</p>
-				<span class="badge tag">{{ tag.title }}</span>
-			</div>
+	<div class="comment">
+		<div class="header">
+			<span class="profilePicture" :style="style"></span>
+			<p class="nickname">{{ user.nickname }} </p>
+			<p>{{ dateTime }}</p>
 		</div>
-	</router-link>
+		<div class="body">
+			<p>{{ comment.content }}</p>
+		</div>
+	</div>
 </template>
 
 <script>
 export default {
 	props: {
-		post: Object,
+		comment: Object,
 		user: Object,
-		tag: Object,
 	},
 	computed: {
 		style() {
@@ -28,7 +24,7 @@ export default {
 		dateTime() {
 			const millisecondsInMinute = 36000
 			const millisecondsInHour = 3600000
-			let date = new Date(this.post.createdAt)
+			let date = new Date(this.comment.createdAt)
 			let now =  new Date()
 
 			let month = date.toLocaleString("default", {month: "short"})
@@ -52,19 +48,14 @@ export default {
 }
 </script>
 <style>
-	.post {
+	.comment {
 		margin: -1px 0 0 -1px ;
 		border: 1px solid var(--extraLightGrey);
-		color: var(--black)
 	}
-
-	.post .nickname {
+	.comment .nickname {
 		font-family: "Chirp Bold";
 	}
-	.post:hover {
+	.comment:hover {
 		background-color: var(--extraExtraLightGrey);
-	}
-	.postLink {
-		text-decoration: none;
 	}
 </style>

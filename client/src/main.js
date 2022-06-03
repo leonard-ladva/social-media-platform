@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import { createStore } from 'vuex'
 import './assets/css/style.css'
-import axios from 'axios'
+import axios from './plugins/axios.js'
 import { ws } from './plugins/websocket.js'
 
 export { store }
@@ -72,7 +72,7 @@ const store = createStore({
 		},
 		async logInUser(context, user) {
 			return new Promise((resolve, reject) => {
-				axios.post('login', {
+				axios.post('/login', {
 					nickname: user.nickname,
 					passwordPlain: user.password,
 				})

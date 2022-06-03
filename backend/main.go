@@ -19,15 +19,17 @@ func setupRoutes() {
 	http.HandleFunc("/isUnique", mid.EnableCors(handlers.IsUnique))
 	http.HandleFunc("/user", mid.EnableCors(mid.Authenticate(handlers.CurrentUser)))
 	// Posts
-	http.HandleFunc("/submitPost", mid.EnableCors(mid.Authenticate(handlers.Submit)))
+	http.HandleFunc("/submitPost", mid.EnableCors(mid.Authenticate(handlers.SubmitPost)))
 	http.HandleFunc("/latestPosts", mid.EnableCors(mid.Authenticate(handlers.LatestPosts)))
 	// Tags
 	http.HandleFunc("/tags", mid.EnableCors(mid.Authenticate(handlers.GetTagsHandler)))
 	// Chats
 	http.HandleFunc("/users", mid.EnableCors(mid.Authenticate(chat.GetAllUsers)))
 	http.HandleFunc("/ws", chat.WebSocket)
-
 	http.HandleFunc("/latestMessages", mid.EnableCors(mid.Authenticate(handlers.LatestMessages)))
+	// Comments
+	http.HandleFunc("/submitComment", mid.EnableCors(mid.Authenticate(handlers.SubmitComment)))
+	http.HandleFunc("/latestComments", mid.EnableCors(mid.Authenticate(handlers.LatestComments)))
 
 }
 

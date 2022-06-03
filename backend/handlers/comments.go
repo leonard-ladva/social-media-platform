@@ -9,11 +9,11 @@ import (
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
 )
 
-type postRequest struct {
-	LastEarliestPost string `json:"lastEarliestPost"`
+type commentRequest struct {
+	LastEarliestcomment string `json:"lastEarliestcomment"`
 }
 
-func SubmitPost(w http.ResponseWriter, r *http.Request) {
+func SubmitComment(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
@@ -21,23 +21,23 @@ func SubmitPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var post data.Post
+	var comment data.Comment
 
-	err = json.Unmarshal(body, &post)
+	err = json.Unmarshal(body, &comment)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	valid, err := post.IsValid()
+	valid, err := comment.IsValid()
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		return 
+		return
 	}
 	if valid {
-		err := post.Insert()
+		err := comment.Insert()
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -48,37 +48,29 @@ func SubmitPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type PostInfo struct {
-	Post *data.Post `json:"post"`
+type CommentInfo struct {
+	Comment *data.Comment `json:"comment"`
 	User *data.User `json:"user"`
-	Tag  *data.Tag  `json:"tag"`
 }
 
-func LatestPosts(w http.ResponseWriter, r *http.Request) {
+func LatestComments(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
-	var lastEarliestPost = queryParams["lastEarliestPost"][0]
+	var lastEarliestComment = queryParams["lastEarliestComment"][0]
 
-	posts, err := data.LatestPosts(lastEarliestPost)
+	comments, err := data.LatestComments(lastEarliestComment)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	postsInfo := []PostInfo{}
+	commentsInfo := []CommentInfo{}
 
-	for _, post := range posts {
-		var currentPost PostInfo
-		currentPost.Post = post
-		// Get tag by TagID
-		tag, err := data.GetTagByID(post.TagID)
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		currentPost.Tag = tag
+	for _, comment := range comments {
+		var currentComment CommentInfo
+		currentComment.Comment = comment
+
 		// Get User by UserID
-		_, user, err := data.GetUser("ID", post.UserID)
+		_, user, err := data.GetUser("ID", comment.UserID)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -86,13 +78,12 @@ func LatestPosts(w http.ResponseWriter, r *http.Request) {
 		}
 		user.Password = []byte("")
 		user.Email = ""
-		currentPost.User = user
+		currentComment.User = user
 
-		postsInfo = append(postsInfo, currentPost)
+		commentsInfo = append(commentsInfo, currentComment)
 	}
 
-	data, err := json.Marshal(postsInfo)
-	// data, err := json.Marshal(posts)
+	data, err := json.Marshal(commentsInfo)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
