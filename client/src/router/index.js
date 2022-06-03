@@ -13,11 +13,6 @@ const routes = [
 	{
 		path: '/',
 		name: 'home',
-		// beforeEnter: () => {
-		// 	if (!store.state.loggedIn) {
-		// 		return {name: 'login'}
-		// 	}
-		// },
 		redirect: {name: 'feed'},
 		component: HomeView,
 		children: [
@@ -50,6 +45,5 @@ const router = createRouter({
 	history: createWebHistory(process.env.BASE_URL),
 	routes
 })
-
 
 export default router

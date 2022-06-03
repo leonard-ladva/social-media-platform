@@ -27,7 +27,7 @@ func GetSession(token string) (Session, error) {
 	var session Session
 	err := row.Scan(&session.ID, &session.UserID, &session.CreatedAt)
 	if err != nil {
-		return session, errors.New("data: getting session")
+		return session, err
 	}
 	return session, nil
 }

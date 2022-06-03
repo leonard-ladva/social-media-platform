@@ -27,15 +27,13 @@
 
 <script>
 import UserCard from './UserCard.vue'
-import { ws } from '../plugins/websocket.js'
 
 export default {
 	name: 'SideBar',
 	methods: {
 		logout() {
 			this.$router.push({name: 'login'})
-			localStorage.removeItem('token')
-			ws.disconnect()
+			this.$store.dispatch('logOutUser')
 		},
 	},
 	computed: {

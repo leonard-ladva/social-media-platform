@@ -27,8 +27,16 @@ export default {
 		},
 	},
 	async created() {
-		await this.$store.dispatch('getUsers')
-	},
+		if (!localStorage.getItem('token')) {
+			this.$router.push({name: 'login'})
+		}
+		const success = await this.$store.dispatch('getCurrentUser')	
+		if (!success) {
+			this.$router.push({name: 'login'})
+		}
+
+		this.$store.dispatch('getUsers')	
+	}
 }
 </script>
 

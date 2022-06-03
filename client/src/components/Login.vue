@@ -29,34 +29,28 @@
 </template>
 
 <script>
-	import axios from '../plugins/axios'
-
 	export default {
 		name: 'LoginForm',
 		data() {
 			return {
 				nickname: '',
 				password: '',
+				error: false,
 			}
 		},
 		methods: {
-			async handleSubmit() {
-				const response = await axios.post('login', {
-					nickname: this.nickname,
-					passwordPlain: this.password,
+			handleSubmit() {
+				this.$store.dispatch('logInUser', {
+					nickname: this.nickname, 
+					password: this.password
 				})
-				if (response.status === 200) {
-					localStorage.setItem('token', response.data.Token)
-					this.$store.dispatch('logInUser', response.data.User)
+				.then(() => {
 					this.$router.push({name: 'feed'})
-				} else {
-					console.log(`ERROR: Login. Status Code: ${response.status}`)
-				}
+				})
+				.catch(() => {
+					this.error = true
+				})
 			},
 		},
-		created() {
-			localStorage.removeItem('token')
-			this.$store.dispatch('logOutUser')
-		}
 	}
 </script>

@@ -28,6 +28,7 @@ const ws = {
 					break
 				// A new user came online
 				case 'online':
+					if (wsMsg.userId === store.state.currentUser.id) { break }
 					store.dispatch('userCameOnline', wsMsg.userId)	
 					break
 				// A user went offline

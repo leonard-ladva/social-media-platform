@@ -16,7 +16,6 @@ import (
 type StringInt int
 
 type LoginResponse struct {
-	Message string `json:"message"`
 	Token   interface{} `json:"token"`
 	User    *data.User `json:"user"`
 }
@@ -181,7 +180,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	// Send a successful login response to the client
 	response := LoginResponse{
-		Message: "Success",
 		Token:   token,
 		User:    user,
 	}

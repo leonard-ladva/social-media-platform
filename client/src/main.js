@@ -4,6 +4,7 @@ import router from './router'
 import { createStore } from 'vuex'
 import './assets/css/style.css'
 import axios from 'axios'
+import { ws } from './plugins/websocket.js'
 
 export { store }
 
@@ -52,23 +53,62 @@ const store = createStore({
 			}
 		},
 		async getCurrentUser(context) {
-			let response = await axios.get('/user')
-			if (response.status === 200) {
-				context.commit('setLoggedIn')
-				context.commit('setCurrentUser', response.data)
-			} else if (response.status === 401) {
-				console.log("You're Not Logged In.")
-			} else {
-				console.log(`ERROR: getting Current User. Status: ${response.status}`)
-			}
+			// return new Promise((resolve, reject) => {
+				const response = await axios.get('/user')
+				// .then ((data, status) => {
+					console.log("got something else")
+					if (response.status === 200) {
+						context.commit('setLoggedIn')
+						context.commit('setCurrentUser', response.data)
+						ws.connect(response.data)
+
+						// resolve(true)
+						return true
+					} else if (response.status === 401) {
+						// reject(401)
+						return false, 401
+					} else {
+						// reject(status)
+						return false, response.status
+					}
+					
+				// }) 
+				// .catch((error) => {
+					// console.log('got error')
+					// reject(error)
+				// }) 
+			// 	else if (response.status === 401) {
+			// 		console.log("You're Not Logged In.")
+			// 	} else {
+			// 		console.log(`ERROR: getting Current User. Status: ${response.status}`)
+			// 	}
+			// })
 		},
-		logInUser(context, user) {
-			context.commit('setLoggedIn')
-			context.commit('setCurrentUser', user)
+		async logInUser(context, user) {
+			return new Promise((resolve, reject) => {
+				axios.post('login', {
+					nickname: user.nickname,
+					passwordPlain: user.password,
+				})
+				.then(({data, status}) => {
+					if (status === 200) {
+						localStorage.setItem('token', data.token)
+						context.commit('setLoggedIn')
+						context.commit('setCurrentUser', data.user)
+						ws.connect(data.user)
+						resolve(true)
+					}
+				})
+				.catch (error => {
+					reject(error)
+				})
+			})
 		},
 		logOutUser(context) {
+			localStorage.removeItem('token')
 			context.commit('setLoggedOut')
 			context.commit('setCurrentUser', null)
+			ws.disconnect()
 		},
 		newMessage(context, message) {
 			context.commit('addMessage', message)
@@ -123,3 +163,4 @@ createApp(App)
 .use(router)
 .use(store)
 .mount('#app')
+ 
