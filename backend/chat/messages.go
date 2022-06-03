@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
-	"git.01.kood.tech/Rostislav/real-time-forum/dataHelpers"
 	"github.com/gorilla/websocket"
 )
 
@@ -46,7 +45,7 @@ func handleMessage(conn *websocket.Conn, wsMsg WebsocketMessage, messageType int
 	message := wsMsg.Message
 	message.CreatedAt = data.CurrentTime()
 
-	chatID, err := dataHelpers.ChatID(message.UserID, message.ReceiverID)
+	chatID, err := data.ChatID(message.UserID, message.ReceiverID)
 	if err != nil {
 		return err
 	}
