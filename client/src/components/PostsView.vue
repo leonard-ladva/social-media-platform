@@ -1,6 +1,6 @@
 <template>
 	<div id="postsView">
-		<MakePost @newPost="newPost()"/>
+		<CreatePost @newPost="newPost()"/>
 		<div id="posts">
 			<PostTemplate
 				v-for="post in posts"	
@@ -22,7 +22,7 @@
 	import axios from '../plugins/axios'
 	import PostTemplate from './PostTemplate.vue' 
 	import TriggerIntersect from './Trigger.vue'
-	import MakePost from './MakePost.vue'
+	import CreatePost from './CreatePost.vue'
 
 	export default {
 		name: 'PostsView',
@@ -36,7 +36,7 @@
 		components: {
 			PostTemplate,
 			TriggerIntersect,
-			MakePost
+			CreatePost
 		},
 		methods: {
 			async getPosts() {

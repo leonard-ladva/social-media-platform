@@ -4,14 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"net/url"
 
 	uuid "github.com/satori/go.uuid"
 )
 
-var postAllowedChars = map[string]string{
-	"Content": "^[a-zA-Z0-9]*$", // letters, numbers
-	"Tag":     "^[ -~]*$",       // all ascii characres in range space to ~
-}
+
 
 func (post *Post) Insert() error {
 	stmt, err := DB.Prepare("INSERT INTO Post (ID, UserID, Content, TagID, CreatedAt) VALUES (?, ?, ?, ?, ?)")
@@ -66,4 +64,25 @@ func LatestPosts(lastEarliestPost string) ([]*Post, error) {
 	}
 
 	return posts, nil
+}
+
+// IsValid checks all the post fields and returns true if valid
+func (p *Post) IsValid() (bool, error) {
+	errs := url.Values{}
+	// Content
+	if !checkCharacters("Content", p.Content) || !checkLength("Content", p.Content) {
+		errs.Add("Content", fmt.Sprintf("Content has to be between %d and %d characters",
+			lengthReq["Content"][0], lengthReq["Content"][1]))
+	}
+	// Tag
+	if !checkCharacters("Tag", p.Tag) || !checkLength("Tag", p.Tag) {
+		errs.Add("Tag", fmt.Sprintf("Tag has to be between %d and %d characters",
+			lengthReq["Tag"][0], lengthReq["Tag"][1]))
+	}
+
+	if len(errs) != 0 {
+		fmt.Println("Form Errors: ", errs)
+		return false, nil
+	}
+	return true, nil
 }

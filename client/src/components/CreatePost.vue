@@ -1,7 +1,14 @@
 <template>
 	<form @submit.prevent="submitPost" id="postForm">
 		<div class="form-group" id="top">
-			<input class="tag" type="text" v-model="tag" v-autowidth="{comfortZone: '0.5rem', minWidth: '4rem'}" aria-disabled="true"/>
+			<input 
+				class="tag" 
+				type="text" 
+				v-model="tag" 
+				v-autowidth="{comfortZone: '0.5rem', minWidth: '4rem'}" 
+				aria-disabled="true"
+				:style="tagLengthValid"
+			/>
 		</div>
 		<div class="form-group" id="middle">
 			<textarea
@@ -19,8 +26,9 @@
 			/>
 			<hr>
 		</div>
+		<span v-if="error" class="error badge bg-secondary">Something went wrong</span>
 		<div class="form-group" id="bottom">
-			<button value="Post" id="submit">Post</button>
+			<button value="Post" id="submit" :disabled="!readyToPost">Post</button>
 		</div>
 	</form>
 </template>
@@ -29,13 +37,12 @@
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, helpers } from '@vuelidate/validators'
 import axios from '../plugins/axios'
-import { mapGetters } from 'vuex'
 import { directive as VueInputAutowidth } from "vue-input-autowidth"
 
 const printableChars = helpers.regex(/[ -~]/)
 
 export default {
-	name: 'MakePost',
+	name: 'CreatePost',
 	directives: { autowidth: VueInputAutowidth },
 	setup: () => ({ v$: useVuelidate() }),
 	data() {
@@ -43,11 +50,12 @@ export default {
 			content: '',
 			tag: '#NoCategory',
 			userId: '',
+			error: false,
 		}
 	},
 	validations() {
 		return {
-			content: { required, printableChars },
+			content: { required, maxLength: maxLength(500), printableChars },
 			tag: { required, maxLength: maxLength(50), printableChars },
 		}
 	},
@@ -61,13 +69,17 @@ export default {
 				content: this.content,
 				userId: this.$store.state.currentUser.id,
 			}
-			const response = await axios.post('submitPost', data)
-			if (response.status == 200) {
-				this.$emit('newPost')
-				this.content = ''
-				this.tag = '#NoCategory'
-			}
-			console.log(response)
+			axios.post('submitPost', data)
+			.then(({status}) => {
+				if (status === 200) {
+					this.$emit('newPost')
+					this.content = ''
+					this.tag = '#NoCategory'
+				}
+			})
+			.catch(() => {
+				this.error = true
+			})
 		},
 		resizeTextArea() {
 			const element = this.$refs.content
@@ -76,7 +88,14 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters(['tags'])
+		readyToPost() {
+			const validTag = this.tag.length > 0 && this.tag.length < 51
+			const validContent = this.content.length > 0 && this.content.length < 501
+			return validTag && validContent
+		},
+		tagLengthValid() {
+			return `background-color: ${this.tag.length > 0 && this.tag.length < 51 ? 'var(--blue)' : 'red'}`
+		}
 	},
 }
 </script>
@@ -122,6 +141,9 @@ export default {
 		font-family: "Chirp Bold";
 		color: var(--white);
 		margin: 0 0.6rem 0 0.3rem;
+	}
+	#submit:disabled {
+		background-color: var(--lightGrey)
 	}
 
 </style>

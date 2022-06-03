@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -30,14 +29,23 @@ func Submit(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(post)
-	err = post.Insert()
+
+	valid, err := post.IsValid()
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return 
+	}
+	if valid {
+		err := post.Insert()
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 type PostInfo struct {

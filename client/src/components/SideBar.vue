@@ -1,5 +1,5 @@
 <template>
-	<div id="sidebar">
+	<div id="sidebar" v-if="$store.state.loggedIn">
 		<div id="currentUser" v-if="$store.state.loggedIn">
 			<p class="title">Logged in user</p>
 			<UserCard :user="$store.state.currentUser" :active="true" />

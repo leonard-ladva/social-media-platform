@@ -3,6 +3,10 @@
 		<div class="auth-inner">
 			<form @submit.prevent="handleSubmit">
 				<h3>Login</h3>	
+
+				<span class="error badge bg-secondary" v-if="error">
+					Incorrect Nickname/Email or Password
+				</span>
 			
 				<div class="form-group">
 					<label>Nickname or Email</label>
@@ -54,3 +58,9 @@
 		},
 	}
 </script>
+
+<style scoped>
+	/* .error { */
+		/* background-color: red; */
+	/* } */
+</style>

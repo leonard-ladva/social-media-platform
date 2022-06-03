@@ -53,36 +53,22 @@ const store = createStore({
 			}
 		},
 		async getCurrentUser(context) {
-			// return new Promise((resolve, reject) => {
-				const response = await axios.get('/user')
-				// .then ((data, status) => {
-					console.log("got something else")
-					if (response.status === 200) {
+			return new Promise((resolve, reject) => {
+				axios.get('/user')
+				.then (({data, status}) => {
+					if (status === 200) {
 						context.commit('setLoggedIn')
-						context.commit('setCurrentUser', response.data)
-						ws.connect(response.data)
+						context.commit('setCurrentUser', data)
+						ws.connect(data)
 
-						// resolve(true)
-						return true
-					} else if (response.status === 401) {
-						// reject(401)
-						return false, 401
-					} else {
-						// reject(status)
-						return false, response.status
+						resolve(true)
 					}
-					
-				// }) 
-				// .catch((error) => {
-					// console.log('got error')
-					// reject(error)
-				// }) 
-			// 	else if (response.status === 401) {
-			// 		console.log("You're Not Logged In.")
-			// 	} else {
-			// 		console.log(`ERROR: getting Current User. Status: ${response.status}`)
-			// 	}
-			// })
+				})
+				.catch((error) => {
+					console.log('got error')
+					reject(error)
+				}) 
+			})
 		},
 		async logInUser(context, user) {
 			return new Promise((resolve, reject) => {
@@ -95,7 +81,6 @@ const store = createStore({
 						localStorage.setItem('token', data.token)
 						context.commit('setLoggedIn')
 						context.commit('setCurrentUser', data.user)
-						ws.connect(data.user)
 						resolve(true)
 					}
 				})

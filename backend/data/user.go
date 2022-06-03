@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/url"
-	"regexp"
 	"strconv"
 	"time"
 
@@ -17,25 +16,6 @@ import (
 )
 
 var CurrentUser *User
-
-// lengthReq specifies the min-max lenghts of user data fields
-var lengthReq = map[string][]int{
-	"Nickname":  {3, 20},
-	"Password":  {8, 50},
-	"FirstName": {1, 50},
-	"LastName":  {1, 50},
-	"Gender":    {1, 50},
-}
-
-// characterReq specifies the allowed characters and format of user data fields
-var characterReq = map[string]string{
-	"Nickname":  "^[a-zA-Z0-9]*$", // letters, numbers
-	"Password":  "^[ -~]*$",       // all ascii characres in range space to ~
-	"FirstName": "^[a-zA-Z]*$",    // letters
-	"LastName":  "^[a-zA-Z]*$",    // letters
-	"Gender":    "^[a-zA-Z ]*$",   // letters and spaces
-	"Email":     "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
-}
 
 type StringInt int
 
@@ -159,17 +139,6 @@ func (u *User) IsValid() (bool, error) {
 		return false, nil
 	}
 	return true, nil
-}
-
-// checkLength checks a user field length based on var lenghtReq
-func checkLength(field string, value string) bool {
-	return (len(value) >= lengthReq[field][0] && len(value) <= lengthReq[field][1])
-}
-
-// checkCharacters checks a user field chars besed on var characterReq
-func checkCharacters(field string, value string) bool {
-	match := regexp.MustCompile(characterReq[field]).MatchString(value)
-	return match
 }
 
 func GetAllUsers() ([]*User, error) {
