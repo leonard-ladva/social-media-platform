@@ -1,8 +1,8 @@
 <template>
 	<div id="chatsView" :key="this.lastEarliest" v-if="$store.getters.loaded">
-		<CreateMessage ref="createMessage"/>
+		<Form_Message ref="createMessage"/>
 		<div id="previousMessages">
-			<ChatMessage
+			<Template_Message
 				v-for="msg in messages"	
 				:key="msg.id"
 
@@ -19,12 +19,12 @@
 
 <script>
 import axios from 'axios'
-import ChatMessage from './Message.vue'
+import Template_Message from './Template_Message.vue'
 import TriggerIntersect from './Trigger.vue'
-import CreateMessage from './CreateMessage.vue'
+import Form_Message from './Form_Message.vue'
 
 export default {
-	name: 'ChatsView',
+	name: 'Page_Chat',
 	data() {
 		return {
 			messages: [],
@@ -33,9 +33,9 @@ export default {
 		}
 	},
 	components: {
-		ChatMessage,
+		Template_Message,
 		TriggerIntersect,
-		CreateMessage,
+		Form_Message,
 	},
 	computed: {
 		receiverID() {

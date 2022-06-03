@@ -159,7 +159,7 @@ const { withAsync, withMessage } = helpers
 const printableChars = helpers.regex(/[ -~]/)
 
 export default {
-	name: "RegisterForm",
+	name: 'Page_Register',
 	setup: () => ({ v$: useVuelidate() }),
 	data() {
 		return {

@@ -34,7 +34,7 @@
 
 <script>
 	export default {
-		name: 'LoginForm',
+		name: 'Page_Login',
 		data() {
 			return {
 				nickname: '',

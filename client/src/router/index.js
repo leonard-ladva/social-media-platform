@@ -4,7 +4,7 @@ const routes = [
 	{
 		path: '/:pathMatch(.*)*',
 		name: 'NotFound',
-		component: ()=> import('../components/NotFound.vue')
+		component: ()=> import('../components/Page_NotFound.vue')
 	},
 	{
 		path: '/',
@@ -32,13 +32,13 @@ const routes = [
 	{
 		path: '/login',
 		name: 'login',
-		component: ()=> import('../components/Login.vue'),
+		component: ()=> import('../components/Page_Login.vue'),
 	
 	},
 	{
 		path: '/register',
 		name: 'register',
-		component: ()=> import('../components/Register.vue'),
+		component: ()=> import('../components/Page_Register.vue'),
 	}
 ]
 

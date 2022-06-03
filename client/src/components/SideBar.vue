@@ -2,20 +2,20 @@
 	<div id="sidebar" v-if="$store.state.loggedIn">
 		<div id="currentUser" v-if="$store.state.loggedIn">
 			<p class="title">Logged in user</p>
-			<UserCard :user="$store.state.currentUser" :active="true" />
+			<Template_User :user="$store.state.currentUser" :active="true" />
 			<a class="logout" href="javascript:void(0)" @click="logout">Log out</a>
 		</div>
 
 		<div id="allUsers">
 			<h4>Chats</h4>
-			<UserCard
+			<Template_User
 			v-for="user of activeWithoutCurrent" 
 			:user="user"
 			:key="user.id" 
 			:active ="true" 
 			/>
 
-			<UserCard
+			<Template_User
 			v-for="user of offlineWithoutCurrent" 
 			:user="user"
 			:key="user.id" 
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import UserCard from './UserCard.vue'
+import Template_User from './Template_User.vue'
 
 export default {
 	name: 'SideBar',
@@ -49,7 +49,7 @@ export default {
 		}
 	},
 	components: {
-		UserCard,
+		Template_User,
 	},
 }
 </script>

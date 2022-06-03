@@ -42,7 +42,7 @@ import { directive as VueInputAutowidth } from "vue-input-autowidth"
 const printableChars = helpers.regex(/[ -~]/)
 
 export default {
-	name: 'CreatePost',
+	name: 'Form_Post',
 	directives: { autowidth: VueInputAutowidth },
 	setup: () => ({ v$: useVuelidate() }),
 	data() {

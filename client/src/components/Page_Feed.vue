@@ -1,8 +1,8 @@
 <template>
 	<div id="postsView">
-		<CreatePost @newPost="newPost()"/>
+		<Form_Post @newPost="newPost()"/>
 		<div id="posts">
-			<PostTemplate
+			<Template_Post
 				v-for="post in posts"	
 				:key="post.id"
 
@@ -20,9 +20,9 @@
 	
 <script>
 	import axios from '../plugins/axios'
-	import PostTemplate from './PostTemplate.vue' 
+	import Template_Post from './Template_Post.vue' 
 	import TriggerIntersect from './Trigger.vue'
-	import CreatePost from './CreatePost.vue'
+	import Form_Post from './Form_Post.vue'
 
 	export default {
 		name: 'PostsView',
@@ -34,9 +34,9 @@
 			}
 		},
 		components: {
-			PostTemplate,
+			Template_Post,
 			TriggerIntersect,
-			CreatePost
+			Form_Post,	
 		},
 		methods: {
 			async getPosts() {

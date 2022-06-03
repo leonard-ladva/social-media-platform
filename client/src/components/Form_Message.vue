@@ -18,7 +18,7 @@
 import { ws } from '../plugins/websocket.js'
 
 export default {
-	name: 'CreateMessage',
+	name: 'Form_Message',
 	data() {
 		return {
 			message: null,

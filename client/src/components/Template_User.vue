@@ -10,7 +10,7 @@
 
 <script>
 	export default {
-		name: "UserCard",
+		name: 'Template_User',
 		props: {
 			user: Object,
 			active: Boolean,

@@ -8,7 +8,7 @@
 <script>
 
 export default {
-	name: 'ChatMessage',
+	name: 'Template_Message',
 	props: {
 		message: Object,
 	},
