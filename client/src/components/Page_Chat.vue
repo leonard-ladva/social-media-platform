@@ -64,23 +64,26 @@ export default {
 	},
 	methods: {
 		async getMessages() {
-			const response = await axios.get('/latestMessages', {
+			axios.get('/latestMessages', {
 				params: {
 					lastEarliest: this.lastEarliestMessage,
 					chatID: this.chatID
 				}
 			})
-			if (response.status === 200) {
-				this.messages = this.messages.concat(response.data)
+			.then(resp => {
+				const data = resp.data
+				this.messages = this.messages.concat(data)
 
 				// get the createdAt time of the last post gotten, last post is the one posted earliest
-				if (response.data.length !== 0) {
-					this.lastEarliest = [...response.data].pop().createdAt
+				if (data.length !== 0) {
+					this.lastEarliest = [...data].pop().createdAt
 				} 
-				if (response.data.length < 10) {
+				if (data.length < 10) {
 					this.outOfMessages = true
 				} 
-			}
+			}).catch((error) => {
+				console.log(error)
+			})
 		},
 	},
 	watch: {

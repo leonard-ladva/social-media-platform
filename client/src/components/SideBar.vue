@@ -38,15 +38,12 @@ export default {
 	},
 	computed: {
 		activeWithoutCurrent() {
-			let activeUsers = Array.from(this.$store.getters.activeUsers)
-			activeUsers = activeUsers.filter(user => user[0] !== this.$store.state.currentUser.id)
-			return activeUsers.map(user => user[1])
+			return this.$store.getters.activeUsers
 		},
 		offlineWithoutCurrent() {
-			let offlineUsers = Array.from(this.$store.getters.offlineUsers)
-			offlineUsers = offlineUsers.filter((user) => user[0] !== this.$store.state.currentUser.id)
-			return offlineUsers.map(user => user[1])
-		}
+			return this.$store.getters.offlineUsers
+		},
+
 	},
 	components: {
 		Template_User,

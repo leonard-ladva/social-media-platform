@@ -3,8 +3,6 @@ package chat
 import (
 	"encoding/json"
 	"errors"
-	"log"
-	"net/http"
 
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
 	"github.com/gorilla/websocket"
@@ -14,31 +12,6 @@ type WebsocketMessage struct {
 	Type    string       `json:"type"` // one of 'auth', 'message', 'offline', 'online'
 	UserID  string       `json:"userId"`
 	Message data.Message `json:"message"`
-}
-
-func GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := data.GetAllUsers()
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	// If a user exists in the WebSocket Global Clients map then mark as active
-	for _, user := range users {
-		_, ok := GC.data[ClientID(user.ID)]
-		if ok {
-			user.Active = true
-		}
-	}
-
-	data, err := json.Marshal(users)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Write(data)
 }
 
 func handleMessage(conn *websocket.Conn, wsMsg WebsocketMessage, messageType int) error {
@@ -86,7 +59,6 @@ func chatToDB(msg data.Message) error {
 	if err != nil {
 		return err
 	}
-
 	if chatExists {
 		err = chat.Update()
 		if err != nil {
@@ -108,9 +80,9 @@ func (wsMsg WebsocketMessage) sendToClient(messageType int) error {
 	}
 
 	// Send message to receiver
-	_, online := GC.data[ClientID(wsMsg.Message.ReceiverID)]
+	_, online := GC.Data[ClientID(wsMsg.Message.ReceiverID)]
 	if online {
-		err := GC.data[ClientID(wsMsg.Message.ReceiverID)].Conn.WriteMessage(messageType, jsonMsg)
+		err := GC.Data[ClientID(wsMsg.Message.ReceiverID)].Conn.WriteMessage(messageType, jsonMsg)
 		if err != nil {
 			return err
 		}
@@ -121,7 +93,7 @@ func (wsMsg WebsocketMessage) sendToClient(messageType int) error {
 	}
 
 	// Send message back to sender to display
-	err = GC.data[ClientID(wsMsg.Message.UserID)].Conn.WriteMessage(messageType, jsonMsg)
+	err = GC.Data[ClientID(wsMsg.Message.UserID)].Conn.WriteMessage(messageType, jsonMsg)
 	if err != nil {
 		return err
 	}

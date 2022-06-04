@@ -193,7 +193,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-// CurrentUser checks if the client has token present in the db
 func CurrentUser(w http.ResponseWriter, r *http.Request) {
 	var user = data.CurrentUser
 	user.Password = []byte("")

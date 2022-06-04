@@ -20,7 +20,7 @@ func (chat Chat) Insert() error {
 }
 
 func (chat Chat) Update() error {
-	stmt, err := DB.Prepare(`UPDATE Chat SET LastMessageTime = ? WHERE ID = "?"`)
+	stmt, err := DB.Prepare("UPDATE Chat SET LastMessageTime = ? WHERE ID = ?")
 	if err != nil {
 		return errors.New("data: updating chat")
 	}
@@ -52,4 +52,22 @@ func (chat Chat) Exists() (bool, error) {
 	}
 
 	return true, nil
+}
+
+func GetAllChats() (chats []Chat, err error) {
+	query := "SELECT ID, LastMessageTime, CreatedAt FROM Chat"
+	rows, err := DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		chat := Chat{}
+		err = rows.Scan(&chat.ID, &chat.LastMessageTime, &chat.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		chats = append(chats, chat)
+	}
+	return chats, nil
 }

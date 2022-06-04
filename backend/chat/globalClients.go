@@ -6,10 +6,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var GC = globalClients{data: make(map[ClientID]*Client), RWMutex: &sync.RWMutex{}}
+var GC = globalClients{Data: make(map[ClientID]*Client), RWMutex: &sync.RWMutex{}}
 
 type globalClients struct {
-	data map[ClientID]*Client
+	Data map[ClientID]*Client
 	*sync.RWMutex
 }
 type Client struct {
@@ -28,13 +28,13 @@ type ClientList struct {
 func (gc *globalClients) Add(cl *Client) {
 	gc.Lock()
 	defer gc.Unlock()
-	gc.data[cl.Id] = cl
+	gc.Data[cl.Id] = cl
 }
 
 func (gc *globalClients) Del(cid ClientID) {
 	gc.Lock()
 	defer gc.Unlock()
-	delete(gc.data, cid)
+	delete(gc.Data, cid)
 }
 
 func (gc *globalClients) list() []Client {
@@ -44,7 +44,7 @@ func (gc *globalClients) list() []Client {
 
 	out := []Client{}
 
-	for _, cl := range gc.data {
+	for _, cl := range gc.Data {
 		out = append(out, Client{Id: cl.Id, Nickname: cl.Nickname, Conn: cl.Conn})
 		// out = append(out, Client{Nickname: cl.Nickname})
 	}

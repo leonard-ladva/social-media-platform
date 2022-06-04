@@ -25,9 +25,10 @@ func setupRoutes() {
 	// Tags
 	http.HandleFunc("/tags", mid.EnableCors(mid.Authenticate(handlers.GetTagsHandler)))
 	// Chats
-	http.HandleFunc("/users", mid.EnableCors(mid.Authenticate(chat.GetAllUsers)))
+	http.HandleFunc("/users", mid.EnableCors(mid.Authenticate(handlers.GetAllUsers)))
 	http.HandleFunc("/ws", chat.WebSocket)
 	http.HandleFunc("/latestMessages", mid.EnableCors(mid.Authenticate(handlers.LatestMessages)))
+	http.HandleFunc("/chats", mid.EnableCors(mid.Authenticate(handlers.GetAllChats)))
 	// Comments
 	http.HandleFunc("/submitComment", mid.EnableCors(mid.Authenticate(handlers.SubmitComment)))
 	http.HandleFunc("/latestComments", mid.EnableCors(mid.Authenticate(handlers.LatestComments)))

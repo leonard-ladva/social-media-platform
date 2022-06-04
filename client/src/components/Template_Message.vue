@@ -18,12 +18,14 @@ export default {
 		},
 		messageTime() {
 			let date = new Date(this.message.createdAt)
-			// let month = date.toLocaleString("default", {month: "short"})
-			let hours = date.getHours()
-			let minutes = date.getMinutes()
-			minutes = minutes < 10 ? `0${minutes}` : minutes
+			let day = date.getDate()
+			let month = date.toLocaleString("default", {month: "short"})
+			// let hours = date.getHours()
+			// let minutes = date.getMinutes()
+			// minutes = minutes < 10 ? `0${minutes}` : minutes
 
-			return `${hours}:${minutes}`
+			// return `${hours}:${minutes}`
+			return `${day} ${month}`
 		}
 	}
 }

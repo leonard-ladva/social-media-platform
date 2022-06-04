@@ -15,9 +15,9 @@ type Tag struct {
 }
 
 type Chat struct {
-	ID              string
-	LastMessageTime int64
-	CreatedAt       int64
+	ID              string `json:"id"`
+	LastMessageTime int64 `json:"lastMessageTime"`
+	CreatedAt       int64 `json:"createdAt"`
 }
 
 type Comment struct {

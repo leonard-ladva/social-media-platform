@@ -3,8 +3,7 @@ import { ws } from './websocket.js'
 import { createStore } from 'vuex'
 import { useToast } from 'vue-toastification'
 import Template_Notification from '../components/Template_Notification.vue'
-
-export { store }
+// import { chatID } from '../assets/js/chats.js'
 
 const toast = useToast()
 
@@ -15,25 +14,47 @@ const store = createStore({
 			loggedIn: false,
 			allUsers: new Map(), // UserID: User
 			newMessages: new Map(), // ChatID: message
+			chats: new Map(), // ChatID: chat
 		}
 	},
 	getters: {
+		// activeChats(state) {
+			// let activeChats = Array.from(state.chats)
+		// },
 		activeUsers(state) {
-			let activeUsers = new Map()
-			for (let user of state.allUsers.values()) {
-				if (user.active === true) {
-					activeUsers.set(user.id, user)
-				}
-			}
+			let activeUsers = Array.from(state.allUsers.values())
+			// filter out offline users and the current User
+			activeUsers = activeUsers.filter(user => user.active === true && user.id !== state.currentUser.id)
+			let existingChats = activeUsers.filter(user => user.lastMessageTime !== -1)
+			let newChats = activeUsers.filter(user => user.lastMessageTime === -1)
+
+			existingChats = existingChats.sort((a, b) => {
+				return b.lastMessageTime - a.lastMessageTime
+			})
+
+			newChats = newChats.sort((a, b) => {
+				return a.nickname - b.nickname
+			})
+			activeUsers = existingChats.concat(newChats)
+
 			return activeUsers
 		},
 		offlineUsers(state) {
-			let offlineUsers = new Map()
-			for (let user of state.allUsers.values()) {
-				if (user.active === false) {
-					offlineUsers.set(user.id, user)
-				}
-			}
+			let offlineUsers = Array.from(state.allUsers.values())
+			// filter out active users and the current User
+			offlineUsers = offlineUsers.filter(user => user.active === false && user.id !== state.currentUser.id)
+			let existingChats = offlineUsers.filter(user => user.lastMessageTime !== -1)
+			let newChats = offlineUsers.filter(user => user.lastMessageTime === -1)
+
+			existingChats = existingChats.sort((a, b) => {
+				return b.lastMessageTime - a.lastMessageTime
+			})
+
+			newChats = newChats.sort((a, b) => {
+				return a.nickname - b.nickname
+			})
+			offlineUsers = existingChats.concat(newChats)
+
 			return offlineUsers
 		},
 		loaded(state) {
@@ -41,15 +62,37 @@ const store = createStore({
 		}
 	},
 	actions: {
+		async getChats({commit, state}) {
+			axios.get('/chats')	
+			.then(response => {
+				for (let chat of response.data) {
+					let userA = chat.id.substr(0, 36)
+					let userB = chat.id.substr(36)
+					// Ignore chat if not related to the current user 
+					if (state.currentUser.id !== userA && state.currentUser.id !== userB) { continue }
+
+					let otherUserID = state.currentUser.id === userA ? userB : userA
+					commit('changeLastMessageTime', {userId: otherUserID, lastMessageTime: chat.lastMessageTime})	
+					commit('addChat', chat)
+				}
+			}).catch(error => {
+				console.log(error)
+			})
+		},
 		async getUsers(context) {
-			let response = await axios.get('/users')	
-			if (response.status === 200) {
-				for (let user of response.data) {
+			axios.get('/users')	
+			.then(resp => {
+				for (let user of resp.data) {
+					user.lastMessageTime = -1
 					context.commit('newUser', user)
 				}
-			} else {
-				console.log(`ERROR: getting users. Status: ${response.status}`)
-			}
+			})
+			.then(() => {
+				context.dispatch('getChats')
+			})
+			.catch(error => {
+				console.log(error)
+			})
 		},
 		async getCurrentUser(context) {
 			return new Promise((resolve, reject) => {
@@ -96,6 +139,7 @@ const store = createStore({
 		},
 		newMessage({commit, state}, message) {
 			commit('addMessage', message)
+			commit('changeLastMessageTime', {userId: message.receiverId, lastMessageTime: message.createdAt})
 			if (message.userId === state.currentUser.id) { return }
 			const sender = state.allUsers.get(message.userId)
 			toast({
@@ -105,6 +149,7 @@ const store = createStore({
 					sender: sender,
 				}
 			})
+			commit('changeLastMessageTime', {userId: message.userId, lastMessageTime: message.createdAt})
 		},
 		removeFirstNotification(context) {
 			context.commit('removeFirstNotification')
@@ -113,6 +158,10 @@ const store = createStore({
 			context.commit('setUserNotActive', userID)
 		},
 		userCameOnline(context, userID) {
+			if (!context.state.allUsers.has(userID)) {
+				context.dispatch('getUsers')
+				return
+			}
 			context.commit('setUserActive', userID)
 		}
 	},
@@ -129,6 +178,9 @@ const store = createStore({
 		addMessage(state, message) {
 			state.newMessages.set(message.chatId, message)
 		},
+		addChat(state, chat) {
+			state.chats.set(chat.id, chat)
+		},
 		setLoggedIn(state) {
 			state.loggedIn = true
 		},
@@ -138,5 +190,10 @@ const store = createStore({
 		setCurrentUser(state, user) {
 			state.currentUser = user
 		},
+		changeLastMessageTime(state, data) {
+			state.allUsers.get(data.userId).lastMessageTime = data.lastMessageTime
+		}
 	},
 })
+
+export { store }
