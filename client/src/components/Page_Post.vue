@@ -55,7 +55,7 @@
 					this.lastEarliestComment = [...response.data].pop().comment.createdAt
 				} 
 
-				if (response.data.length < 5) { this.outOfComments = true } 
+				if (response.data.length < 10) { this.outOfComments = true } 
 			},
 			async newComment() {
 				this.lastEarliestComment = -1

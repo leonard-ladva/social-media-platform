@@ -1,6 +1,6 @@
 export { ws }
 
-import { store } from '../main.js'
+import { store } from './store.js'
 
 const wsAddress = "ws://localhost:9100/ws"
 

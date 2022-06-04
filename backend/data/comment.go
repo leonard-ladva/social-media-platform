@@ -25,9 +25,9 @@ func (comment *Comment) Insert() error {
 
 func LatestComments(lastEarliestComment string) ([]*Comment, error) {
 	var comments []*Comment
-	query := "SELECT ID, UserID, PostID, Content, CreatedAt FROM Comment ORDER BY CreatedAt DESC LIMIT 5"
+	query := "SELECT ID, UserID, PostID, Content, CreatedAt FROM Comment ORDER BY CreatedAt DESC LIMIT 10"
 	if lastEarliestComment != "-1" {
-		query = fmt.Sprintf("SELECT ID, UserID, PostID, Content, CreatedAt FROM Comment WHERE CreatedAt < %s ORDER BY CreatedAt DESC LIMIT 5", lastEarliestComment)
+		query = fmt.Sprintf("SELECT ID, UserID, PostID, Content, CreatedAt FROM Comment WHERE CreatedAt < %s ORDER BY CreatedAt DESC LIMIT 10", lastEarliestComment)
 	}
 	rows, err := DB.Query(query)
 	if err == sql.ErrNoRows {

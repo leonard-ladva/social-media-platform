@@ -6,20 +6,17 @@
 		</div>
 		<SideBar/>
 	</div>
-	<MessageNotification v-for="notification in notifications" :key="notification.id" :message="notification"/>
 </template>
 
 <script>
 import SideBar from './SideBar.vue'
 import TitleBar from './Titlebar.vue'
-import MessageNotification from './Notification.vue'
 
 export default {
 	name: 'HomePage',
 	components: {
 		SideBar,
 		TitleBar,
-		MessageNotification,
 	},
 	computed: {
 		notifications() {

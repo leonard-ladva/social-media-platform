@@ -40,9 +40,9 @@ func (post *Post) Insert() error {
 
 func LatestPosts(lastEarliestPost string) ([]*Post, error) {
 	var posts []*Post
-	query := "SELECT ID, Content, TagID, UserId, CreatedAt FROM Post ORDER BY CreatedAt DESC LIMIT 5"
+	query := "SELECT ID, Content, TagID, UserId, CreatedAt FROM Post ORDER BY CreatedAt DESC LIMIT 10"
 	if lastEarliestPost != "-1" {
-		query = fmt.Sprintf("SELECT ID, Content, TagID, UserId, CreatedAt FROM Post WHERE CreatedAt < %s ORDER BY CreatedAt DESC LIMIT 5", lastEarliestPost)
+		query = fmt.Sprintf("SELECT ID, Content, TagID, UserId, CreatedAt FROM Post WHERE CreatedAt < %s ORDER BY CreatedAt DESC LIMIT 10", lastEarliestPost)
 	}
 	rows, err := DB.Query(query)
 	if err == sql.ErrNoRows {

@@ -143,7 +143,7 @@ func (u *User) IsValid() (bool, error) {
 
 func GetAllUsers() ([]*User, error) {
 	var users []*User
-	query := "SELECT ID, Nickname, Color, CreatedAt FROM User ORDER BY Nickname ASC"
+	query := "SELECT ID, Nickname, FirstName, LastName, Color, CreatedAt FROM User ORDER BY Nickname ASC"
 	rows, err := DB.Query(query)
 	if err == sql.ErrNoRows {
 		return users, nil
@@ -156,7 +156,7 @@ func GetAllUsers() ([]*User, error) {
 	for rows.Next() {
 		user := &User{}
 
-		err := rows.Scan(&user.ID, &user.Nickname, &user.Color, &user.CreatedAt)
+		err := rows.Scan(&user.ID, &user.Nickname, &user.FirstName, &user.LastName, &user.Color, &user.CreatedAt)
 		if err != nil {
 			fmt.Println(err)
 			return nil, errors.New("data: getting users")

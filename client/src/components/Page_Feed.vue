@@ -47,7 +47,7 @@
 					this.lastEarliestPost = [...response.data].pop().post.createdAt
 				} 
 
-				if (response.data.length < 5) { this.outOfPosts = true } 
+				if (response.data.length < 10) { this.outOfPosts = true } 
 			},
 			newPost() {
 				this.lastEarliestPost = -1

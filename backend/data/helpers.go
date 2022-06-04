@@ -29,7 +29,7 @@ var characterReq = map[string]string{
 	"LastName":  "^[a-zA-Z]*$",    // letters
 	"Gender":    "^[a-zA-Z ]*$",   // letters and spaces
 	"Email":     "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
-	"Content":   "^[ -~]*$", // all ascii characters in range space to ~
+	"Content":   "(?m)^[ -~]*$", // all ascii characters in range space to ~
 	"Tag":       "^[ -~]*$", // all ascii characters in range space to ~
 }
 
