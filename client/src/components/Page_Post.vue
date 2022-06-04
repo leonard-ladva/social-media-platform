@@ -48,7 +48,7 @@
 		},
 		methods: {
 			async getComments() {
-				const response = await axios.get('latestComments', {params: {lastEarliestComment: this.lastEarliestComment}})
+				const response = await axios.get('latestComments', {params: {lastEarliestComment: this.lastEarliestComment, postId: this.$route.params.postId}})
 				this.comments = this.comments.concat(response.data)
 				// get the createdAt time of the last comment gotten, last comment is commented earliest
 				if (response.data.length !== 0) {

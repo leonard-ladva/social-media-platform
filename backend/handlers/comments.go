@@ -56,8 +56,9 @@ type CommentInfo struct {
 func LatestComments(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
 	var lastEarliestComment = queryParams["lastEarliestComment"][0]
+	var postID = queryParams["postId"][0]
 
-	comments, err := data.LatestComments(lastEarliestComment)
+	comments, err := data.LatestComments(postID, lastEarliestComment)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

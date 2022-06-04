@@ -23,13 +23,13 @@ func (comment *Comment) Insert() error {
 	return nil
 }
 
-func LatestComments(lastEarliestComment string) ([]*Comment, error) {
+func LatestComments(postID string, lastEarliestComment string) ([]*Comment, error) {
 	var comments []*Comment
-	query := "SELECT ID, UserID, PostID, Content, CreatedAt FROM Comment ORDER BY CreatedAt DESC LIMIT 10"
+	query := "SELECT ID, UserID, PostID, Content, CreatedAt FROM Comment WHERE PostID = ? ORDER BY CreatedAt DESC LIMIT 10"
 	if lastEarliestComment != "-1" {
-		query = fmt.Sprintf("SELECT ID, UserID, PostID, Content, CreatedAt FROM Comment WHERE CreatedAt < %s ORDER BY CreatedAt DESC LIMIT 10", lastEarliestComment)
+		query = fmt.Sprintf("SELECT ID, UserID, PostID, Content, CreatedAt FROM Comment WHERE CreatedAt < %s AND PostID = ? ORDER BY CreatedAt DESC LIMIT 10", lastEarliestComment)
 	}
-	rows, err := DB.Query(query)
+	rows, err := DB.Query(query, postID)
 	if err == sql.ErrNoRows {
 		return comments, nil
 	}
