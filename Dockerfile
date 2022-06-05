@@ -1,7 +1,7 @@
 FROM golang:1.18-alpine AS builder
 RUN apk update && apk add git && apk add build-base
 RUN mkdir /build
-ADD ./ /build
+ADD ./backend/ /build
 WORKDIR /build
 
 RUN go get github.com/gorilla/websocket
