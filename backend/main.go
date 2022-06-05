@@ -46,5 +46,5 @@ func main() {
 	fmt.Println("Database Connected")
 
 	setupRoutes()
-	http.ListenAndServe(PORT, nil)
+	http.ListenAndServe(":" + PORT, nil)
 }
