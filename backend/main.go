@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"git.01.kood.tech/Rostislav/real-time-forum/chat"
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
@@ -33,8 +34,9 @@ func setupRoutes() {
 	http.HandleFunc("/submitComment", mid.EnableCors(mid.Authenticate(handlers.SubmitComment)))
 	http.HandleFunc("/latestComments", mid.EnableCors(mid.Authenticate(handlers.LatestComments)))
 
-
 }
+
+var PORT = os.Getenv("PORT")
 
 func main() {
 	err := data.Connect()
@@ -44,5 +46,5 @@ func main() {
 	fmt.Println("Database Connected")
 
 	setupRoutes()
-	http.ListenAndServe(":9100", nil)
+	http.ListenAndServe(PORT, nil)
 }
