@@ -4,5 +4,6 @@ build:
 
 run:
   workers: 
-    command: ./real-time-forum
+    command: 
+      ./real-time-forum
     image: realtimeforum
