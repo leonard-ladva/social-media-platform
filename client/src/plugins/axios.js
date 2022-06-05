@@ -9,6 +9,8 @@ axios.interceptors.request.use(
 	},
 	error => Promise.reject(error),
 );
-axios.defaults.baseURL = 'http://localhost:9100/';
+
+// axios.defaults.baseURL = 'http://localhost:9100/';
+axios.defaults.baseURL = 'https://real-time-forum-backend.herokuapp.com/';
 
 export default axios
