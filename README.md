@@ -2,15 +2,14 @@
 [Task Description](https://github.com/01-edu/public/tree/master/subjects/real-time-forum) | [Audit Questions](https://github.com/01-edu/public/tree/master/subjects/real-time-forum/audit)
 ---|---
 
-### Start Program
-in /backend
+## Visit real-time-forum [online](https://henhouse.onrender.com)
+## Start real-time-forum locally 
+ To Run the App locally you need to run the backend and frontend separately
+### in **/backend** folder
 ```bash
 go run *.go
 ```
-in /client
+### in **/client** folder
 ```bash
 yarn run serve
 ```
-
-### Note
-If you open real-time-forum folder currently in VS Code then, go modules appear to be broken, because we have 2 go.mod files, one in /backend and one in /test-forum. If you instead open /backend as a working directory folder then the error wont show.
