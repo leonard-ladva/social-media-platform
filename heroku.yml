@@ -3,4 +3,4 @@ build:
     web: Dockerfile
 
 run:
-  web: ./real-time-forum
+  workers: ./real-time-forum
