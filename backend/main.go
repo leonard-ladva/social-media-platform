@@ -36,8 +36,6 @@ func setupRoutes() {
 
 }
 
-var PORT = os.Getenv("PORT")
-
 func main() {
 	err := data.Connect()
 	if err != nil {
@@ -46,5 +44,5 @@ func main() {
 	fmt.Println("Database Connected")
 
 	setupRoutes()
-	http.ListenAndServe(":" + PORT, nil)
+	http.ListenAndServe(":9100", nil)
 }
