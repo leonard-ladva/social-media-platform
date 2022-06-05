@@ -3,7 +3,4 @@ build:
     web: Dockerfile
 
 run:
-  workers: 
-    command: 
-      - ./real-time-forum
-    image: realtimeforum
+  web: ./real-time-forum
