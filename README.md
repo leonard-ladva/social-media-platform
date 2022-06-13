@@ -12,7 +12,7 @@ after that has finished run
 ```bash
 docker compose up
 ```
-to create containers and run them, after the frontend has compiled you are ready to visit localhost:3000
+to create containers and run them, after the frontend has compiled you are ready to visit [localhost:3000]
 
 ## Stopping Containers and removing docker images
 open a second terminal, or stop the program with **CTRL+C**, then run
