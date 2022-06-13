@@ -1,15 +1,22 @@
 # real-time-forum
 [Task Description](https://github.com/01-edu/public/tree/master/subjects/real-time-forum) | [Audit Questions](https://github.com/01-edu/public/tree/master/subjects/real-time-forum/audit)
 ---|---
-
-## Visit real-time-forum [online](https://henhouse.onrender.com)
-## Start real-time-forum locally 
- To Run the App locally you need to run the backend and frontend separately
-### in **/backend** folder
+## Running Dockerized App
+run
 ```bash
-go run *.go
+./dockerbuild.sh
 ```
-### in **/client** folder
+to create the docker images, this will take a minute or two
+
+after that has finished run
 ```bash
-yarn run serve
+docker compose up
+```
+to create containers and run them, after the frontend has compiled you are ready to visit localhost:3000
+
+## Stopping Containers and removing docker images
+open a second terminal, or stop the program with **CTRL+C**, then run
+```bash
+docker compose down
+./removeimages.sh
 ```
