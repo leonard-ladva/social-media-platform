@@ -2,7 +2,7 @@ export { ws }
 
 import { store } from './store.js'
 
-const wsAddress = "ws://localhost:9100/ws"
+const wsAddress = "ws://localhost:9000/ws"
 
 class WsMsg {
 	constructor(params) {

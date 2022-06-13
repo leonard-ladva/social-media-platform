@@ -10,6 +10,6 @@ axios.interceptors.request.use(
 	error => Promise.reject(error),
 );
 
-axios.defaults.baseURL = 'http://localhost:9100/';
+axios.defaults.baseURL = 'http://localhost:9000/';
 
 export default axios

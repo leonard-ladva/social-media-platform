@@ -2,6 +2,7 @@ package data
 
 import (
 	"errors"
+	"fmt"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -18,6 +19,7 @@ func (user User) AddSession() (uuid.UUID, error) {
 	}
 
 	statement.Exec(token, user.ID, CurrentTime())
+	fmt.Println("Successfully Inserted Session")
 	return token, nil
 }
 

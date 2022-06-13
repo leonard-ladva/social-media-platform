@@ -1,0 +1,11 @@
+services:
+  frontend:
+    container_name: RTF-frontend
+    image: rtf-frontend
+    ports:
+      - "3000:3000"
+  backend:
+    container_name: RTF-backend
+    image: rtf-backend
+    ports:
+      - "9000:9000"

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"git.01.kood.tech/Rostislav/real-time-forum/chat"
 	"git.01.kood.tech/Rostislav/real-time-forum/data"
@@ -39,10 +38,11 @@ func setupRoutes() {
 func main() {
 	err := data.Connect()
 	if err != nil {
-		panic(err)
+		// panic(err)
+		fmt.Println(err)
 	}
 	fmt.Println("Database Connected")
 
 	setupRoutes()
-	http.ListenAndServe(":9100", nil)
+	http.ListenAndServe(":9000", nil)
 }

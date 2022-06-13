@@ -1,0 +1,1 @@
+docker images rm rtf-backend rtf-frontend
