@@ -26,7 +26,13 @@ func EnableCors(next http.HandlerFunc) http.HandlerFunc {
 func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// r.Header.Get("Authorization") returns "Bearer <ActualToken>", so we only need the second part
-		token := strings.Split(r.Header.Get("Authorization"), " ")[1]
+		token := strings.Split(r.Header.Get("Authorization"), " ")
+		if token.length < 2 {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		token = token[1]
+
 
 		session, err := data.GetSession(token)
 		if err == sql.ErrNoRows {
