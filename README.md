@@ -4,19 +4,14 @@
 ## Running Dockerized App
 run
 ```bash
-./dockerbuild.sh
+docker compose up --build
 ```
-to create the docker images, this will take a minute or two
+to create the docker images and run the containers, this will take a minute or two
 
-after that has finished run
-```bash
-docker compose up
-```
-to create containers and run them, after the frontend has compiled you are ready to visit localhost:3000
+after that has finished visit http://localhost:3000
 
-## Stopping Containers and removing docker images
+## Stopping Containers
 open a second terminal, or stop the program with **CTRL+C**, then run
 ```bash
 docker compose down
-./removeimages.sh
 ```
