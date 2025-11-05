@@ -27,7 +27,3 @@ open a second terminal, or stop the program with **CTRL+C**, then run
 ```bash
 docker compose down
 ```
-
-
-[Task Description](https://github.com/01-edu/public/tree/master/subjects/real-time-forum) | [Audit Questions](https://github.com/01-edu/public/tree/master/subjects/real-time-forum/audit)
----|---
