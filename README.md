@@ -1,6 +1,6 @@
 # Real Time Forum
 Real Time Forum is a full-stack social media app that is written in GoLang and Vue.js. It uses websockets for real-time messaging and online statuses.
-<img width="1888" height="1656" alt="home screen" src="https://github.com/user-attachments/assets/a739d052-cf5f-4ee5-a0ad-001d482e9558" />
+<img width="1888" height="1656" alt="aa(1)" src="https://github.com/user-attachments/assets/d8ccad43-fb8f-4741-a6f5-3f00e1340501" />
 
 ## Features
 
